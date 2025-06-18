@@ -19,9 +19,7 @@ import {
   Users,
   Zap,
   Building,
-  Volume2,
-  VolumeX,
-  Settings,
+
   ScanLine,
   ScreenShare,
   ScreenShareOff,
@@ -99,10 +97,10 @@ export default function FieldUnit() {
         
         // Ensure detection object is valid before sending
         if (detection && detection.type && detection.severity && typeof detection.confidence === 'number') {
-          sendDetection(
-            detection.type as Detection['type'],
-            detection.severity as Detection['severity'],
-            detection.confidence
+        sendDetection(
+          detection.type as Detection['type'],
+          detection.severity as Detection['severity'],
+          detection.confidence
           );
         } else {
           console.warn('⚠️ Invalid detection object received from AI, not sending to DB:', detection);
@@ -129,6 +127,64 @@ export default function FieldUnit() {
     loadDetections()
     loadInstructions()
     setupWebSocket()
+    
+    // Monitor battery level
+    if ('getBattery' in navigator) {
+      (navigator as any).getBattery().then((battery: any) => {
+        setBatteryLevel(Math.round(battery.level * 100))
+        
+        battery.addEventListener('levelchange', () => {
+          setBatteryLevel(Math.round(battery.level * 100))
+        })
+      })
+    }
+    
+    // Monitor network connection
+    const updateConnectionStatus = () => {
+      if (navigator.onLine) {
+        // Simulate signal strength based on connection type
+        const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection
+        if (connection) {
+          const effectiveType = connection.effectiveType
+          if (effectiveType === '4g') setSignalStrength(4)
+          else if (effectiveType === '3g') setSignalStrength(3)
+          else if (effectiveType === '2g') setSignalStrength(2)
+          else setSignalStrength(1)
+        } else {
+          setSignalStrength(navigator.onLine ? 4 : 0)
+        }
+      } else {
+        setSignalStrength(0)
+      }
+    }
+    
+    updateConnectionStatus()
+    window.addEventListener('online', updateConnectionStatus)
+    window.addEventListener('offline', updateConnectionStatus)
+    
+    // Monitor location
+    let watchId: number | undefined
+    if ('geolocation' in navigator) {
+      watchId = navigator.geolocation.watchPosition(
+        (position) => {
+          // Update with real coordinates
+          const lat = position.coords.latitude
+          const lng = position.coords.longitude
+          setCurrentLocation(`${lat.toFixed(6)}, ${lng.toFixed(6)}`)
+          
+          // Update unit location in database
+          updateUnitLocation(lat, lng)
+        },
+        (error) => {
+          console.error('Location error:', error)
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 5000
+        }
+      )
+    }
     
     // Subscribe to real-time updates for this unit
     const detectionsSubscription = supabase
@@ -159,6 +215,11 @@ export default function FieldUnit() {
       detectionsSubscription.unsubscribe()
       instructionsSubscription.unsubscribe()
       websocketService.disconnect()
+      window.removeEventListener('online', updateConnectionStatus)
+      window.removeEventListener('offline', updateConnectionStatus)
+      if (watchId !== undefined) {
+        navigator.geolocation.clearWatch(watchId)
+      }
     }
   }, [unitId])
 
@@ -286,6 +347,23 @@ export default function FieldUnit() {
     }
   }
 
+  const updateUnitLocation = async (lat: number, lng: number) => {
+    try {
+      const { error } = await supabase
+        .from('units')
+        .update({ 
+          lat,
+          lng,
+          last_update: new Date().toISOString()
+        })
+        .eq('id', unitId)
+
+      if (error) throw error
+    } catch (error) {
+      console.error('Error updating unit location:', error)
+    }
+  }
+
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case "critical":
@@ -380,7 +458,7 @@ export default function FieldUnit() {
         
         // Auto-send detection to database if significant
         if (detection.type !== 'none') {
-            await sendDetection(detection.type, detection.severity, detection.confidence)
+        await sendDetection(detection.type, detection.severity, detection.confidence)
         }
         
         // alert(`AI זיהה: ${detection.description}\nרמת ביטחון: ${Math.round(detection.confidence * 100)}%`)
@@ -450,6 +528,26 @@ export default function FieldUnit() {
           </Alert>
         )}
 
+        {/* Low Battery Warning */}
+        {batteryLevel < 20 && (
+          <Alert className="bg-red-600 text-white border-red-700">
+            <Battery className="h-5 w-5" />
+            <AlertDescription className="font-bold">
+              אזהרה: סוללה נמוכה ({batteryLevel}%)
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {/* No Server Connection Warning */}
+        {!wsConnected && (
+          <Alert className="bg-orange-600 text-white border-orange-700">
+            <AlertTriangle className="h-5 w-5" />
+            <AlertDescription className="font-bold">
+              אין חיבור לשרת - ניתוח AI לא זמין
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Header Status Bar */}
         <div className="flex items-center justify-between bg-gray-800 rounded-lg p-3">
           <div className="flex items-center gap-2">
@@ -499,22 +597,6 @@ export default function FieldUnit() {
                     <p className="text-sm opacity-75 mb-4">
                       {isPermissionGranted ? 'בחר מקור וידאו להתחלה' : 'אנא אפשר גישה למצלמה'}
                     </p>
-                    <div className="flex gap-2 justify-center">
-                      <Button 
-                        onClick={startCamera} 
-                        className="mt-2 bg-blue-600 hover:bg-blue-700"
-                      >
-                        <Video className="w-4 h-4 mr-2" />
-                        הפעל מצלמה
-                      </Button>
-                      <Button 
-                        onClick={startScreenShare}
-                        className="mt-2 bg-green-600 hover:bg-green-700"
-                      >
-                        <ScreenShare className="w-4 h-4 mr-2" />
-                        שתף מסך
-                      </Button>
-                    </div>
                   </div>
                 </div>
               )}
@@ -645,7 +727,18 @@ export default function FieldUnit() {
 
           <Button
             variant="outline"
-            onClick={() => console.log("Calling Control Center...")}
+            onClick={() => {
+              if (wsConnected) {
+                websocketService.sendMessage('unit_message', {
+                  unitId,
+                  message: 'יחידה 001 מבקשת ליצור קשר',
+                  timestamp: new Date().toISOString()
+                })
+                alert('בקשת קשר נשלחה למרכז השליטה')
+              } else {
+                alert('לא מחובר למרכז השליטה')
+              }
+            }}
             className="h-16"
           >
             <Phone className="w-6 h-6 mr-2" />
@@ -678,19 +771,6 @@ export default function FieldUnit() {
                isAnalyzing ? 'עצור ניתוח חי' : 'התחל ניתוח חי'}
             </Button>
             
-            {/* Manual Analysis Button */}
-            <Button
-              onClick={analyzeFrame}
-              variant="outline"
-              className="w-full h-12"
-              disabled={!wsConnected || !isStreamActive}
-            >
-              <ScanLine className="w-5 h-5 mr-2" />
-              {!wsConnected ? 'לא מחובר לשרת' : 
-               !isStreamActive ? 'הפעל מקור וידאו' : 
-               'נתח מסגרת נוכחית'}
-            </Button>
-
             {/* AI Status and Errors */}
             {aiError && (
               <Alert className="border-red-500 bg-red-950">
@@ -700,55 +780,6 @@ export default function FieldUnit() {
                 </AlertDescription>
               </Alert>
             )}
-          </CardContent>
-        </Card>
-
-        {/* Quick Detection Buttons */}
-        <Card className="bg-gray-800 border-gray-700">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Eye className="w-5 h-5" />
-              דיווח מהיר
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="grid grid-cols-2 gap-2">
-              <Button
-                variant="outline"
-                onClick={() => sendDetection('fire', 'critical', 0.95)}
-                className="justify-start text-red-400 border-red-400"
-              >
-                <Flame className="w-4 h-4 mr-2" />
-                שריפה
-              </Button>
-              
-              <Button
-                variant="outline"
-                onClick={() => sendDetection('person', 'high', 0.85)}
-                className="justify-start text-blue-400 border-blue-400"
-              >
-                <Users className="w-4 h-4 mr-2" />
-                נפגעים
-              </Button>
-              
-              <Button
-                variant="outline"
-                onClick={() => sendDetection('smoke', 'medium', 0.80)}
-                className="justify-start text-gray-400 border-gray-400"
-              >
-                <Eye className="w-4 h-4 mr-2" />
-                עשן
-              </Button>
-              
-              <Button
-                variant="outline"
-                onClick={() => sendDetection('structural_damage', 'high', 0.75)}
-                className="justify-start text-orange-400 border-orange-400"
-              >
-                <Building className="w-4 h-4 mr-2" />
-                נזק מבני
-              </Button>
-            </div>
           </CardContent>
         </Card>
 
@@ -832,37 +863,6 @@ export default function FieldUnit() {
           </CardContent>
         </Card>
 
-        {/* Settings */}
-        <Card className="bg-gray-800 border-gray-700">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Settings className="w-5 h-5" />
-            הגדרות
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm">שמע</span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsAudioOn(!isAudioOn)}
-              >
-                {isAudioOn ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-          </Button>
-        </div>
-            
-            <div className="flex items-center justify-between">
-              <span className="text-sm">רמת סוללה</span>
-              <span className="text-sm">{batteryLevel}%</span>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <span className="text-sm">עוצמת אות</span>
-              <span className="text-sm">{signalStrength}/4</span>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   )
