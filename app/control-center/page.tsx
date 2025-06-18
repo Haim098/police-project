@@ -378,7 +378,7 @@ export default function ControlCenter() {
                             <div>
                               <div className="font-medium text-sm">{unit.name}</div>
                               <div className="text-xs text-gray-500 flex items-center gap-1">
-                                {getUnitTypeIcon(unit.type)}
+                            {getUnitTypeIcon(unit.type)}
                                 {unit.type === 'police' && 'משטרה'}
                                 {unit.type === 'fire' && 'כיבוי אש'}
                                 {unit.type === 'medical' && 'רפואה'}
@@ -499,13 +499,13 @@ export default function ControlCenter() {
 
         {/* Control Panel */}
         <div className="grid md:grid-cols-3 gap-6">
-          <Card>
+            <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2">
                 <Video className="w-5 h-5" />
                 בקרת וידאו
-              </CardTitle>
-            </CardHeader>
+                </CardTitle>
+              </CardHeader>
             <CardContent className="space-y-3">
               <Button className="w-full" variant="outline">
                 צפה בכל הזרמים
@@ -515,7 +515,7 @@ export default function ControlCenter() {
               </Button>
               <div className="text-sm text-gray-600 text-center">
                 {selectedUnits.length} יחידות נבחרות
-              </div>
+                    </div>
             </CardContent>
           </Card>
 
@@ -538,31 +538,31 @@ export default function ControlCenter() {
               </Button>
               <div className="text-xs text-gray-500 text-center">
                 {selectedUnits.length > 0 ? 'שליחה ליחידות נבחרות' : 'שליחה לכל היחידות'}
-              </div>
-            </CardContent>
-          </Card>
+                </div>
+              </CardContent>
+            </Card>
 
-          <Card>
+            <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="w-5 h-5" />
+                <CardTitle className="flex items-center gap-2">
+                  <Settings className="w-5 h-5" />
                 הגדרות מהירות
-              </CardTitle>
-            </CardHeader>
+                </CardTitle>
+              </CardHeader>
             <CardContent className="space-y-3">
-              <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between">
                 <span className="text-sm">עדכון אוטומטי</span>
                 <Switch checked={true} />
-              </div>
-              <div className="flex items-center justify-between">
+                  </div>
+                  <div className="flex items-center justify-between">
                 <span className="text-sm">התראות דחופות</span>
                 <Switch checked={soundAlerts} onCheckedChange={setSoundAlerts} />
-              </div>
+                    </div>
               <Button className="w-full" variant="outline" size="sm">
                 הגדרות מתקדמות
               </Button>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
         </div>
       </div>
     </div>

@@ -341,8 +341,8 @@ export default function FieldUnit() {
                   className="w-full h-full object-cover rounded-lg"
                 />
               ) : (
-                <div className="text-white text-center">
-                  <Camera className="w-16 h-16 mx-auto mb-4 opacity-50" />
+              <div className="text-white text-center">
+                <Camera className="w-16 h-16 mx-auto mb-4 opacity-50" />
                   <p className="text-lg">{isPermissionGranted ? 'מצלמה כבויה' : 'יש צורך בהרשאה למצלמה'}</p>
                   <p className="text-sm opacity-75">
                     {isPermissionGranted ? 'לחץ כדי להפעיל' : 'אנא אפשר גישה למצלמה'}
@@ -357,7 +357,7 @@ export default function FieldUnit() {
                       הפעל מצלמה
                     </Button>
                   )}
-                </div>
+              </div>
               )}
               
               {/* Camera error display */}
@@ -530,7 +530,7 @@ export default function FieldUnit() {
                   >
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        {getDetectionIcon(detection.type)}
+                      {getDetectionIcon(detection.type)}
                         <span className="font-medium text-sm text-gray-900">
                           {detection.type === 'fire' && 'שריפה'}
                           {detection.type === 'smoke' && 'עשן'}
@@ -574,7 +574,7 @@ export default function FieldUnit() {
                   <Alert key={instruction.id} className="border-blue-500 bg-blue-50">
                     <AlertDescription className="text-sm text-gray-900">
                       {instruction.data?.message || 'הודעה ממרכז השליטה'}
-                    </AlertDescription>
+                      </AlertDescription>
                     <div className="text-xs text-gray-500 mt-1">
                       {new Date(instruction.created_at || '').toLocaleTimeString('he-IL')}
                     </div>
@@ -597,7 +597,7 @@ export default function FieldUnit() {
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2">
               <Settings className="w-5 h-5" />
-              הגדרות
+            הגדרות
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -609,8 +609,8 @@ export default function FieldUnit() {
                 onClick={() => setIsAudioOn(!isAudioOn)}
               >
                 {isAudioOn ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-              </Button>
-            </div>
+          </Button>
+        </div>
             
             <div className="flex items-center justify-between">
               <span className="text-sm">רמת סוללה</span>
