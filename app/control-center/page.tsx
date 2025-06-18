@@ -28,6 +28,7 @@ import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { supabase, Unit, Detection } from "@/lib/supabase"
 import websocketService from "@/lib/websocket"
+import { Badge } from "@/components/ui/badge"
 
 export default function ControlCenter() {
   const [activeUnits, setActiveUnits] = useState<Unit[]>([])
@@ -152,6 +153,46 @@ export default function ControlCenter() {
     }
   }
 
+  const getDetectionIcon = (type: string) => {
+    switch (type) {
+      case "fire":
+        return <Flame className="w-5 h-5 text-red-500" />;
+      case "smoke":
+        return <Eye className="w-5 h-5 text-gray-500" />;
+      case "person":
+        return <Users className="w-5 h-5 text-blue-500" />;
+      case "structural_damage":
+        return <Building className="w-5 h-5 text-orange-500" />;
+      case "electrical_hazard":
+        return <Zap className="w-5 h-5 text-yellow-500" />;
+      case "vehicle":
+        return <AlertTriangle className="w-5 h-5 text-indigo-500" />; // Or a car icon if available
+      default:
+        return <Shield className="w-5 h-5 text-gray-400" />;
+    }
+  };
+
+  const getDetectionText = (detection: Detection) => {
+    switch (detection.type) {
+      case "fire":
+        return "זיהוי שריפה פעילה";
+      case "smoke":
+        return "זיהוי עשן";
+      case "person":
+        return "זיהוי אדם באזור סכנה";
+      case "structural_damage":
+        return "נזק מבני זוהה";
+      case "electrical_hazard":
+        return "זוהתה סכנה חשמלית";
+      case "vehicle":
+        return "זוהה רכב חשוד/בוער";
+      case "none":
+        return "אין זיהויים מיוחדים";
+      default:
+        return `זיהוי מסוג: ${detection.type}`;
+    }
+  };
+
   const getUnitTypeIcon = (type: string) => {
     switch (type) {
       case "police":
@@ -195,7 +236,7 @@ export default function ControlCenter() {
     }
   }
 
-  const acknowledgeDetection = async (detectionId: string) => {
+  const acknowledgeDetection = async (detectionId: number) => {
     try {
       const { error } = await supabase
         .from('detections')
@@ -429,65 +470,33 @@ export default function ControlCenter() {
                 <ScrollArea className="h-[520px] p-4">
                   <div className="space-y-3">
                     {detections.map((detection) => (
-                      <Alert
-                        key={detection.id}
-                        className={`border-l-4 ${
-                          detection.acknowledged ? "opacity-60" : ""
-                        } ${
-                          detection.severity === "critical" ? "border-red-500" :
-                          detection.severity === "high" ? "border-orange-500" :
-                          detection.severity === "medium" ? "border-yellow-500" :
-                          "border-blue-500"
-                        }`}
-                      >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <div className={`w-2 h-2 rounded-full ${getSeverityColor(detection.severity)}`}></div>
-                              <span className="text-xs font-medium uppercase">
-                                {detection.type === 'fire' && 'שריפה'}
-                                {detection.type === 'smoke' && 'עשן'}
-                                {detection.type === 'person' && 'אדם'}
-                                {detection.type === 'child' && 'ילד'}
-                                {detection.type === 'gas_tank' && 'מיכל גז'}
-                                {detection.type === 'wire' && 'חוט חשמל'}
-                                {detection.type === 'structural_damage' && 'נזק מבני'}
-                              </span>
-                              <span className="text-xs text-gray-500">
-                                {Math.round(detection.confidence * 100)}% ביטחון
-                              </span>
-                            </div>
-                            <AlertDescription className="text-sm">
-                              זוהה {detection.type === 'fire' && 'אש פעילה'}
-                              {detection.type === 'smoke' && 'עשן כבד'}
-                              {detection.type === 'person' && 'אדם'}
-                              {detection.type === 'child' && 'ילד'}
-                              {detection.type === 'gas_tank' && 'מיכל גז'}
-                              {detection.type === 'wire' && 'חוט חשמל חשוף'}
-                              {detection.type === 'structural_damage' && 'נזק מבני'}
-                            </AlertDescription>
-                            <div className="text-xs text-gray-400 mt-1">
-                              {new Date(detection.created_at || '').toLocaleTimeString('he-IL')}
-                            </div>
+                      <div key={detection.id} className={`p-3 rounded-lg flex items-center justify-between border-l-4 ${getSeverityColor(detection.severity)}`}>
+                        <div className="flex items-center gap-3">
+                          {getDetectionIcon(detection.type)}
+                          <div>
+                            <p className="font-bold">{getDetectionText(detection)}</p>
+                            <p className="text-xs text-gray-500">
+                              יחידה {detection.unit_id.substring(0, 3)} | {new Date(detection.created_at).toLocaleTimeString('he-IL')}
+                            </p>
                           </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant={detection.severity === 'critical' ? 'destructive' : 'secondary'}>
+                            ביטחון {Math.round(detection.confidence * 100)}%
+                          </Badge>
                           {!detection.acknowledged && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="text-xs"
-                              onClick={() => acknowledgeDetection(detection.id)}
-                            >
+                            <Button size="sm" onClick={() => acknowledgeDetection(detection.id)}>
                               אישור
                             </Button>
                           )}
                         </div>
-                      </Alert>
+                      </div>
                     ))}
                     
                     {detections.length === 0 && (
-                      <div className="text-center text-gray-500 py-8">
-                        <Eye className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                        <p>אין זיהויים חדשים</p>
+                      <div className="text-center text-gray-400 py-8">
+                        <Bell className="mx-auto w-10 h-10 mb-2" />
+                        <p>אין התראות חדשות</p>
                       </div>
                     )}
                   </div>

@@ -1,0 +1,1216 @@
+<testsuites id="" name="" tests="55" failures="55" skipped="0" errors="0" time="2825.091559">
+<testsuite name="control-center.spec.ts" timestamp="2025-06-18T13:38:37.750Z" hostname="chromium" tests="28" failures="28" skipped="0" time="1.073" errors="0">
+<testcase name="Control Center Interface › Dashboard Layout › should display control center dashboard correctly" classname="control-center.spec.ts" time="0.022">
+<failure message="control-center.spec.ts:13:9 should display control center dashboard correctly" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:13:9 › Control Center Interface › Dashboard Layout › should display control center dashboard correctly 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Control Center Interface › Dashboard Layout › should show connection status indicators" classname="control-center.spec.ts" time="0.06">
+<failure message="control-center.spec.ts:28:9 should show connection status indicators" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:28:9 › Control Center Interface › Dashboard Layout › should show connection status indicators 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Control Center Interface › Dashboard Layout › should display real-time statistics" classname="control-center.spec.ts" time="0.022">
+<failure message="control-center.spec.ts:36:9 should display real-time statistics" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:36:9 › Control Center Interface › Dashboard Layout › should display real-time statistics 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Control Center Interface › Units Management › should display active units list" classname="control-center.spec.ts" time="0.049">
+<failure message="control-center.spec.ts:47:9 should display active units list" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:47:9 › Control Center Interface › Units Management › should display active units list 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Control Center Interface › Units Management › should show unit details correctly" classname="control-center.spec.ts" time="0.056">
+<failure message="control-center.spec.ts:58:9 should show unit details correctly" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:58:9 › Control Center Interface › Units Management › should show unit details correctly 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Control Center Interface › Units Management › should handle unit selection for messaging" classname="control-center.spec.ts" time="0.023">
+<failure message="control-center.spec.ts:74:9 should handle unit selection for messaging" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:74:9 › Control Center Interface › Units Management › should handle unit selection for messaging 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Control Center Interface › Alerts and Detections › should display detections section" classname="control-center.spec.ts" time="0.028">
+<failure message="control-center.spec.ts:92:9 should display detections section" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:92:9 › Control Center Interface › Alerts and Detections › should display detections section 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Control Center Interface › Alerts and Detections › should handle detection acknowledgment" classname="control-center.spec.ts" time="0.034">
+<failure message="control-center.spec.ts:102:9 should handle detection acknowledgment" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:102:9 › Control Center Interface › Alerts and Detections › should handle detection acknowledgment 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Control Center Interface › Alerts and Detections › should show detection severity correctly" classname="control-center.spec.ts" time="0.022">
+<failure message="control-center.spec.ts:118:9 should show detection severity correctly" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:118:9 › Control Center Interface › Alerts and Detections › should show detection severity correctly 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Control Center Interface › Communication Panel › should display message composition interface" classname="control-center.spec.ts" time="0.029">
+<failure message="control-center.spec.ts:140:9 should display message composition interface" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:140:9 › Control Center Interface › Communication Panel › should display message composition interface 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Control Center Interface › Communication Panel › should send message to units" classname="control-center.spec.ts" time="0.023">
+<failure message="control-center.spec.ts:148:9 should send message to units" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:148:9 › Control Center Interface › Communication Panel › should send message to units 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Control Center Interface › Communication Panel › should validate message before sending" classname="control-center.spec.ts" time="0.023">
+<failure message="control-center.spec.ts:170:9 should validate message before sending" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:170:9 › Control Center Interface › Communication Panel › should validate message before sending 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Control Center Interface › Communication Panel › should clear message after sending" classname="control-center.spec.ts" time="0.071">
+<failure message="control-center.spec.ts:184:9 should clear message after sending" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:184:9 › Control Center Interface › Communication Panel › should clear message after sending 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Control Center Interface › Sound Alerts › should toggle sound alerts" classname="control-center.spec.ts" time="0.03">
+<failure message="control-center.spec.ts:208:9 should toggle sound alerts" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:208:9 › Control Center Interface › Sound Alerts › should toggle sound alerts 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Control Center Interface › Sound Alerts › should have sound alerts label" classname="control-center.spec.ts" time="0.027">
+<failure message="control-center.spec.ts:225:9 should have sound alerts label" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:225:9 › Control Center Interface › Sound Alerts › should have sound alerts label 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Control Center Interface › Real-time Updates › should handle WebSocket connection status" classname="control-center.spec.ts" time="0.043">
+<failure message="control-center.spec.ts:231:9 should handle WebSocket connection status" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:231:9 › Control Center Interface › Real-time Updates › should handle WebSocket connection status 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Control Center Interface › Real-time Updates › should update statistics in real-time" classname="control-center.spec.ts" time="0.033">
+<failure message="control-center.spec.ts:240:9 should update statistics in real-time" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:240:9 › Control Center Interface › Real-time Updates › should update statistics in real-time 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Control Center Interface › Real-time Updates › should handle disconnection gracefully" classname="control-center.spec.ts" time="0.021">
+<failure message="control-center.spec.ts:253:9 should handle disconnection gracefully" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:253:9 › Control Center Interface › Real-time Updates › should handle disconnection gracefully 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Control Center Interface › Responsive Design › should adapt to tablet view" classname="control-center.spec.ts" time="0.037">
+<failure message="control-center.spec.ts:274:9 should adapt to tablet view" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:274:9 › Control Center Interface › Responsive Design › should adapt to tablet view 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Control Center Interface › Responsive Design › should adapt to mobile view" classname="control-center.spec.ts" time="0.046">
+<failure message="control-center.spec.ts:286:9 should adapt to mobile view" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:286:9 › Control Center Interface › Responsive Design › should adapt to mobile view 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Control Center Interface › Data Loading States › should show loading state initially" classname="control-center.spec.ts" time="0.032">
+<failure message="control-center.spec.ts:299:9 should show loading state initially" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:299:9 › Control Center Interface › Data Loading States › should show loading state initially 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Control Center Interface › Data Loading States › should handle empty states gracefully" classname="control-center.spec.ts" time="0.047">
+<failure message="control-center.spec.ts:312:9 should handle empty states gracefully" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:312:9 › Control Center Interface › Data Loading States › should handle empty states gracefully 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Control Center Interface › Accessibility and Performance › should be keyboard navigable" classname="control-center.spec.ts" time="0.069">
+<failure message="control-center.spec.ts:328:9 should be keyboard navigable" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:328:9 › Control Center Interface › Accessibility and Performance › should be keyboard navigable 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Control Center Interface › Accessibility and Performance › should have proper heading structure" classname="control-center.spec.ts" time="0.047">
+<failure message="control-center.spec.ts:339:9 should have proper heading structure" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:339:9 › Control Center Interface › Accessibility and Performance › should have proper heading structure 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Control Center Interface › Accessibility and Performance › should load within performance budget" classname="control-center.spec.ts" time="0.069">
+<failure message="control-center.spec.ts:351:9 should load within performance budget" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:351:9 › Control Center Interface › Accessibility and Performance › should load within performance budget 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Control Center Interface › Accessibility and Performance › should handle Hebrew RTL correctly" classname="control-center.spec.ts" time="0.056">
+<failure message="control-center.spec.ts:363:9 should handle Hebrew RTL correctly" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:363:9 › Control Center Interface › Accessibility and Performance › should handle Hebrew RTL correctly 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Control Center Interface › Error Handling › should handle API errors gracefully" classname="control-center.spec.ts" time="0.036">
+<failure message="control-center.spec.ts:376:9 should handle API errors gracefully" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:376:9 › Control Center Interface › Error Handling › should handle API errors gracefully 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Control Center Interface › Error Handling › should recover from WebSocket errors" classname="control-center.spec.ts" time="0.018">
+<failure message="control-center.spec.ts:390:9 should recover from WebSocket errors" type="FAILURE">
+<![CDATA[  [chromium] › control-center.spec.ts:390:9 › Control Center Interface › Error Handling › should recover from WebSocket errors 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+</testsuite>
+<testsuite name="field-unit.spec.ts" timestamp="2025-06-18T13:38:37.750Z" hostname="chromium" tests="27" failures="27" skipped="0" time="1.145" errors="0">
+<testcase name="Field Unit Interface › Page Layout and Navigation › should display field unit interface correctly" classname="field-unit.spec.ts" time="0.027">
+<failure message="field-unit.spec.ts:16:9 should display field unit interface correctly" type="FAILURE">
+<![CDATA[  [chromium] › field-unit.spec.ts:16:9 › Field Unit Interface › Page Layout and Navigation › should display field unit interface correctly 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Field Unit Interface › Page Layout and Navigation › should be responsive on mobile devices" classname="field-unit.spec.ts" time="0.02">
+<failure message="field-unit.spec.ts:33:9 should be responsive on mobile devices" type="FAILURE">
+<![CDATA[  [chromium] › field-unit.spec.ts:33:9 › Field Unit Interface › Page Layout and Navigation › should be responsive on mobile devices 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Field Unit Interface › Camera Functionality › should handle camera activation" classname="field-unit.spec.ts" time="0.025">
+<failure message="field-unit.spec.ts:55:9 should handle camera activation" type="FAILURE">
+<![CDATA[  [chromium] › field-unit.spec.ts:55:9 › Field Unit Interface › Camera Functionality › should handle camera activation 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Field Unit Interface › Camera Functionality › should handle camera permissions denied" classname="field-unit.spec.ts" time="0.048">
+<failure message="field-unit.spec.ts:68:9 should handle camera permissions denied" type="FAILURE">
+<![CDATA[  [chromium] › field-unit.spec.ts:68:9 › Field Unit Interface › Camera Functionality › should handle camera permissions denied 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Field Unit Interface › Camera Functionality › should start and stop recording" classname="field-unit.spec.ts" time="0.03">
+<failure message="field-unit.spec.ts:79:9 should start and stop recording" type="FAILURE">
+<![CDATA[  [chromium] › field-unit.spec.ts:79:9 › Field Unit Interface › Camera Functionality › should start and stop recording 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Field Unit Interface › Camera Functionality › should disable recording when camera is off" classname="field-unit.spec.ts" time="0.089">
+<failure message="field-unit.spec.ts:98:9 should disable recording when camera is off" type="FAILURE">
+<![CDATA[  [chromium] › field-unit.spec.ts:98:9 › Field Unit Interface › Camera Functionality › should disable recording when camera is off 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Field Unit Interface › AI Analysis Features › should show AI analysis controls" classname="field-unit.spec.ts" time="0.028">
+<failure message="field-unit.spec.ts:106:9 should show AI analysis controls" type="FAILURE">
+<![CDATA[  [chromium] › field-unit.spec.ts:106:9 › Field Unit Interface › AI Analysis Features › should show AI analysis controls 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Field Unit Interface › AI Analysis Features › should require camera for AI analysis" classname="field-unit.spec.ts" time="0.056">
+<failure message="field-unit.spec.ts:113:9 should require camera for AI analysis" type="FAILURE">
+<![CDATA[  [chromium] › field-unit.spec.ts:113:9 › Field Unit Interface › AI Analysis Features › should require camera for AI analysis 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Field Unit Interface › AI Analysis Features › should start live AI analysis when camera is on" classname="field-unit.spec.ts" time="0.066">
+<failure message="field-unit.spec.ts:122:9 should start live AI analysis when camera is on" type="FAILURE">
+<![CDATA[  [chromium] › field-unit.spec.ts:122:9 › Field Unit Interface › AI Analysis Features › should start live AI analysis when camera is on 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Field Unit Interface › AI Analysis Features › should perform single frame analysis" classname="field-unit.spec.ts" time="0.041">
+<failure message="field-unit.spec.ts:138:9 should perform single frame analysis" type="FAILURE">
+<![CDATA[  [chromium] › field-unit.spec.ts:138:9 › Field Unit Interface › AI Analysis Features › should perform single frame analysis 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Field Unit Interface › Manual Detection Reporting › should show manual detection buttons" classname="field-unit.spec.ts" time="0.02">
+<failure message="field-unit.spec.ts:158:9 should show manual detection buttons" type="FAILURE">
+<![CDATA[  [chromium] › field-unit.spec.ts:158:9 › Field Unit Interface › Manual Detection Reporting › should show manual detection buttons 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Field Unit Interface › Manual Detection Reporting › should send manual fire detection" classname="field-unit.spec.ts" time="0.048">
+<failure message="field-unit.spec.ts:167:9 should send manual fire detection" type="FAILURE">
+<![CDATA[  [chromium] › field-unit.spec.ts:167:9 › Field Unit Interface › Manual Detection Reporting › should send manual fire detection 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Field Unit Interface › Manual Detection Reporting › should send manual casualty detection" classname="field-unit.spec.ts" time="0.028">
+<failure message="field-unit.spec.ts:183:9 should send manual casualty detection" type="FAILURE">
+<![CDATA[  [chromium] › field-unit.spec.ts:183:9 › Field Unit Interface › Manual Detection Reporting › should send manual casualty detection 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Field Unit Interface › Emergency Features › should have emergency call button" classname="field-unit.spec.ts" time="0.02">
+<failure message="field-unit.spec.ts:199:9 should have emergency call button" type="FAILURE">
+<![CDATA[  [chromium] › field-unit.spec.ts:199:9 › Field Unit Interface › Emergency Features › should have emergency call button 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Field Unit Interface › Emergency Features › should trigger emergency alert" classname="field-unit.spec.ts" time="0.024">
+<failure message="field-unit.spec.ts:208:9 should trigger emergency alert" type="FAILURE">
+<![CDATA[  [chromium] › field-unit.spec.ts:208:9 › Field Unit Interface › Emergency Features › should trigger emergency alert 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Field Unit Interface › Emergency Features › should have contact center button" classname="field-unit.spec.ts" time="0.025">
+<failure message="field-unit.spec.ts:223:9 should have contact center button" type="FAILURE">
+<![CDATA[  [chromium] › field-unit.spec.ts:223:9 › Field Unit Interface › Emergency Features › should have contact center button 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Field Unit Interface › Real-time Data Display › should show recent detections section" classname="field-unit.spec.ts" time="0.033">
+<failure message="field-unit.spec.ts:240:9 should show recent detections section" type="FAILURE">
+<![CDATA[  [chromium] › field-unit.spec.ts:240:9 › Field Unit Interface › Real-time Data Display › should show recent detections section 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Field Unit Interface › Real-time Data Display › should show control center messages section" classname="field-unit.spec.ts" time="0.046">
+<failure message="field-unit.spec.ts:250:9 should show control center messages section" type="FAILURE">
+<![CDATA[  [chromium] › field-unit.spec.ts:250:9 › Field Unit Interface › Real-time Data Display › should show control center messages section 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Field Unit Interface › Real-time Data Display › should update connection status dynamically" classname="field-unit.spec.ts" time="0.045">
+<failure message="field-unit.spec.ts:260:9 should update connection status dynamically" type="FAILURE">
+<![CDATA[  [chromium] › field-unit.spec.ts:260:9 › Field Unit Interface › Real-time Data Display › should update connection status dynamically 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Field Unit Interface › Settings and Configuration › should show device settings section" classname="field-unit.spec.ts" time="0.015">
+<failure message="field-unit.spec.ts:271:9 should show device settings section" type="FAILURE">
+<![CDATA[  [chromium] › field-unit.spec.ts:271:9 › Field Unit Interface › Settings and Configuration › should show device settings section 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Field Unit Interface › Settings and Configuration › should toggle microphone" classname="field-unit.spec.ts" time="0.08">
+<failure message="field-unit.spec.ts:279:9 should toggle microphone" type="FAILURE">
+<![CDATA[  [chromium] › field-unit.spec.ts:279:9 › Field Unit Interface › Settings and Configuration › should toggle microphone 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Field Unit Interface › Settings and Configuration › should toggle audio" classname="field-unit.spec.ts" time="0.024">
+<failure message="field-unit.spec.ts:291:9 should toggle audio" type="FAILURE">
+<![CDATA[  [chromium] › field-unit.spec.ts:291:9 › Field Unit Interface › Settings and Configuration › should toggle audio 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Field Unit Interface › WebSocket Communication › should handle WebSocket connection" classname="field-unit.spec.ts" time="0.075">
+<failure message="field-unit.spec.ts:305:9 should handle WebSocket connection" type="FAILURE">
+<![CDATA[  [chromium] › field-unit.spec.ts:305:9 › Field Unit Interface › WebSocket Communication › should handle WebSocket connection 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Field Unit Interface › WebSocket Communication › should handle WebSocket disconnection gracefully" classname="field-unit.spec.ts" time="0.092">
+<failure message="field-unit.spec.ts:316:9 should handle WebSocket disconnection gracefully" type="FAILURE">
+<![CDATA[  [chromium] › field-unit.spec.ts:316:9 › Field Unit Interface › WebSocket Communication › should handle WebSocket disconnection gracefully 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Field Unit Interface › Performance and Accessibility › should be accessible" classname="field-unit.spec.ts" time="0.025">
+<failure message="field-unit.spec.ts:337:9 should be accessible" type="FAILURE">
+<![CDATA[  [chromium] › field-unit.spec.ts:337:9 › Field Unit Interface › Performance and Accessibility › should be accessible 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Field Unit Interface › Performance and Accessibility › should load within reasonable time" classname="field-unit.spec.ts" time="0.094">
+<failure message="field-unit.spec.ts:353:9 should load within reasonable time" type="FAILURE">
+<![CDATA[  [chromium] › field-unit.spec.ts:353:9 › Field Unit Interface › Performance and Accessibility › should load within reasonable time 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+<testcase name="Field Unit Interface › Performance and Accessibility › should handle Hebrew RTL layout" classname="field-unit.spec.ts" time="0.021">
+<failure message="field-unit.spec.ts:365:9 should handle Hebrew RTL layout" type="FAILURE">
+<![CDATA[  [chromium] › field-unit.spec.ts:365:9 › Field Unit Interface › Performance and Accessibility › should handle Hebrew RTL layout 
+
+    Error: browserType.launch: Executable doesn't exist at C:\Users\מאיר\AppData\Local\ms-playwright\chromium-1178\chrome-win\chrome.exe
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:95:33)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\fixtureRunner.js:57:109)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\testInfo.js:284:17)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:460:11)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:296:9)
+        at C:\Users\מאיר\Desktop\‏‏תיקיה חדשה (5)\node_modules\.pnpm\playwright@1.53.0\node_modules\playwright\lib\worker\workerMain.js:292:7)
+]]>
+</failure>
+</testcase>
+</testsuite>
+</testsuites>

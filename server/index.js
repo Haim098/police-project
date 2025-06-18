@@ -62,9 +62,7 @@ console.log('🎥 Live Analysis WebSocket server initialized')
 setupLiveAnalysis(io)
 
 // Initialize Socket.IO service
-console.log('🔌 Initializing WebSocket service...')
 initializeSocketService(io)
-console.log('✅ WebSocket service initialized')
 
 // Error handling
 app.use((err, req, res, next) => {

@@ -22,27 +22,22 @@ export interface Unit {
   updated_at?: string
 }
 
-export interface Detection {
-  id: string
-  unit_id: string
-  type: 'fire' | 'smoke' | 'person' | 'child' | 'gas_tank' | 'wire' | 'structural_damage'
-  confidence: number
-  bbox?: {
-    x: number
-    y: number
-    width: number
-    height: number
-  }
-  frame_url?: string
-  acknowledged?: boolean
-  severity: 'low' | 'medium' | 'high' | 'critical'
-  created_at?: string
-}
+export type Detection = {
+  id: number;
+  created_at: string;
+  unit_id: string;
+  type: 'fire' | 'smoke' | 'person' | 'structural_damage' | 'electrical_hazard' | 'explosion_risk' | 'vehicle' | 'none';
+  confidence: number;
+  severity: 'low' | 'medium' | 'high' | 'critical' | 'none';
+  acknowledged: boolean;
+  location?: string;
+  data?: any;
+};
 
-export interface Event {
-  id: string
-  unit_id: string
-  type: 'telemetry' | 'alert' | 'status_change' | 'detection'
-  data: Record<string, any>
-  created_at?: string
-} 
+export type Event = {
+  id: number;
+  unit_id: string;
+  type: 'telemetry' | 'alert' | 'status_change' | 'detection';
+  data: Record<string, any>;
+  created_at?: string;
+}; 

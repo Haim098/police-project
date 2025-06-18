@@ -1,15 +1,41 @@
 const express = require('express')
-const { GoogleGenerativeAI, Modality } = require('@google/generative-ai')
+const { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } = require('@google/generative-ai')
 const router = express.Router()
 
 // Initialize Gemini AI
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
+const model = genAI.getGenerativeModel({ 
+  model: 'gemini-1.5-flash',
+  generationConfig: {
+    maxOutputTokens: 2048,
+    temperature: 0.2,
+  },
+  // Disable safety settings for this specific use case
+  safetySettings: [
+    {
+      category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+      threshold: HarmBlockThreshold.BLOCK_NONE,
+    },
+    {
+      category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+      threshold: HarmBlockThreshold.BLOCK_NONE,
+    },
+    {
+      category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+      threshold: HarmBlockThreshold.BLOCK_NONE,
+    },
+    {
+      category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+      threshold: HarmBlockThreshold.BLOCK_NONE,
+    },
+  ],
+})
 
 // Emergency analysis prompt in Hebrew
 const EMERGENCY_ANALYSIS_PROMPT = `
-אתה מערכת AI מתקדמת לזיהוי חירום עבור כוחות הביטחון בישראל. אתה רואה וידאו בזמן אמת מיחידת שטח.
+אתה מערכת AI מתקדמת לזיהוי חירום עבור כוחות הביטחון בישראל. אתה רואה תמונה שצולמה מיחידת שטח.
 
-נתח כל מסגרת וחפש:
+נתח את התמונה וחפש:
 🔥 שריפות, עשן (שחור/לבן), להבות
 👥 אנשים בסיכון, נפגעים, ילדים, מבוגרים
 🏠 נזק מבני, קירות שבורים, דלתות שבורות
@@ -17,176 +43,152 @@ const EMERGENCY_ANALYSIS_PROMPT = `
 💥 חומרים מסוכנים, בלוני גז, רכבים בוערים
 🚨 כל איום או סכנה אחרת
 
-תן תשובה מיידית בפורמט הזה:
+השב אך ורק בפורמט JSON הבא. אל תוסיף שום טקסט או הסבר לפני או אחרי ה-JSON.
 {
   "urgent": true/false,
   "detections": [
     {
-      "type": "fire/smoke/person/structural_damage/electrical_hazard/explosion_risk",
-      "severity": "low/medium/high/critical", 
+      "type": "fire/smoke/person/structural_damage/electrical_hazard/explosion_risk/none",
+      "severity": "low/medium/high/critical/none", 
       "confidence": 0.0-1.0,
-      "description": "תיאור בעברית",
-      "location": "מיקום באזור",
-      "action_required": "פעולה נדרשת"
+      "description": "תיאור קצר בעברית של מה שזוהה. אם לא זוהה כלום, כתוב 'ללא זיהוי'.",
+      "location": "מיקום כללי של הזיהוי בתמונה (למשל, 'במרכז התמונה', 'בצד שמאל למעלה').",
+      "action_required": "פעולה נדרשת מהכוח בשטח, או 'אין צורך בפעולה מיידית'.",
+      "bounding_box": { "x": 0.0-1.0, "y": 0.0-1.0, "width": 0.0-1.0, "height": 0.0-1.0 }
     }
   ],
   "instructions": [
-    "הנחיה 1 לכוח בשטח",
-    "הנחיה 2 לכוח בשטח"
+    "הנחיה אחת ברורה וקצרה לכוח בשטח",
+    "הנחיה נוספת אם נדרש"
   ],
   "priority": "low/medium/high/critical"
 }
 
-רק אם זיהית משהו חשוב - השב. אם הכל רגיל - אל תשיב כלום.
+אם לא זיהית שום דבר משמעותי, השב עם "type": "none" ו-"severity": "none".
 `
 
 // Live Analysis integration with existing Socket.IO
 function setupLiveAnalysis(io) {
   console.log('🎥 Setting up Live Analysis with Socket.IO...')
   
-  // Store active live sessions
-  const liveSessions = new Map()
+  const activeSockets = new Set()
 
   io.on('connection', (socket) => {
+    let analysisInterval = null
+    let isAnalyzing = false
+
     // Handle live analysis start
     socket.on('start_live_analysis', async (data) => {
       const { unitId } = data
       const sessionId = socket.id
+      activeSockets.add(sessionId)
       
-      console.log(`🎥 Starting live analysis for unit ${unitId}, session ${sessionId}`)
-      
-      try {
-        if (!process.env.GEMINI_API_KEY) {
-          console.warn('⚠️ Gemini API key not found - Using mock live analysis')
-          setupMockLiveAnalysis(socket, sessionId, unitId)
-          return
-        }
+      console.log(`🎥 Live analysis started for unit ${unitId}, session ${sessionId}`)
 
-        // Initialize Gemini Live session
-        const liveSession = await genAI.live.connect({
-          model: 'gemini-2.5-flash',
-          config: {
-            responseModalities: [Modality.TEXT],
-            systemInstruction: EMERGENCY_ANALYSIS_PROMPT,
-            generationConfig: {
-              maxOutputTokens: 1024,
-              temperature: 0.1,
-            }
-          }
-        })
-
-        // Store session
-        liveSessions.set(sessionId, {
-          geminiSession: liveSession,
-          socket: socket,
-          unitId: unitId,
-          lastAnalysis: Date.now()
-        })
-
-        // Handle responses from Gemini Live API
-        liveSession.on('message', (response) => {
-          try {
-            if (response.serverContent?.modelTurn) {
-              const analysisText = response.serverContent.modelTurn.parts[0]?.text
-              if (analysisText && analysisText.trim()) {
-                console.log('🤖 Live AI Response:', analysisText.substring(0, 100) + '...')
-                
-                let analysis
-                try {
-                  const jsonMatch = analysisText.match(/\{[\s\S]*\}/)
-                  if (jsonMatch) {
-                    analysis = JSON.parse(jsonMatch[0])
-                    
-                    socket.emit('live_analysis_result', {
-                      sessionId,
-                      analysis: {
-                        ...analysis,
-                        timestamp: new Date().toISOString(),
-                        session_id: sessionId
-                      }
-                    })
-
-                    if (analysis.urgent) {
-                      console.log('🚨 URGENT detection found:', analysis.detections)
-                    }
-                  }
-                } catch (parseError) {
-                  console.warn('⚠️ Failed to parse live AI response')
-                }
-              }
-            }
-          } catch (error) {
-            console.error('🚨 Live response processing error:', error)
-          }
-        })
-
-        socket.emit('live_analysis_ready', { 
-          sessionId,
-          message: 'Live AI analysis activated'
-        })
-
-      } catch (error) {
-        console.error('🚨 Failed to create live session:', error)
+      if (!process.env.GEMINI_API_KEY) {
+        console.warn('⚠️ Gemini API key not found - Using mock live analysis')
         setupMockLiveAnalysis(socket, sessionId, unitId)
+        return
       }
+
+      socket.emit('live_analysis_ready', { 
+        sessionId,
+        message: 'Live AI analysis activated. Ready for frames.'
+      })
     })
 
     // Handle video frames
     socket.on('live_analysis_frame', async (data) => {
       const { frameData } = data
       const sessionId = socket.id
-      const session = liveSessions.get(sessionId)
       
-      if (!session) return
+      if (!activeSockets.has(sessionId) || !frameData || isAnalyzing) {
+        return
+      }
 
-      // Rate limiting: max 2 frames per second
-      const now = Date.now()
-      if (now - session.lastAnalysis < 500) return
-      session.lastAnalysis = now
+      console.log(`🖼️ Received frame for analysis from session ${sessionId}`)
 
       try {
-        await session.geminiSession.sendRealtimeInput({
-          video: {
-            data: frameData,
-            mimeType: 'image/jpeg'
+        isAnalyzing = true
+        const frameImage = processFrameData(frameData)
+        if (!frameImage) throw new Error('Invalid frame data')
+
+        const result = await model.generateContent([
+          EMERGENCY_ANALYSIS_PROMPT,
+          frameImage
+        ])
+        const response = result.response
+        const analysisText = response.text()
+        
+        // More robust JSON parsing
+        let analysis;
+        try {
+          // The AI sometimes wraps the JSON in ```json ... ```, so we extract it.
+          const jsonMatch = analysisText.match(/```json\s*(\{[\s\S]*\})\s*```|(\{[\s\S]*\})/);
+          if (!jsonMatch) {
+            throw new Error('No JSON object found in the AI response.');
           }
-        })
+          // Get the actual JSON string from the match (either group 1 or 2)
+          const jsonString = jsonMatch[1] || jsonMatch[2];
+          analysis = JSON.parse(jsonString);
+
+        } catch (parseError) {
+          console.error('🚨 Failed to parse JSON from AI response. Raw text:', analysisText);
+          // We'll throw a new error to be caught by the outer block
+          throw new Error(`Failed to parse AI response: ${parseError.message}`);
+        }
+        
+        if (analysis) {
+          socket.emit('live_analysis_result', {
+            sessionId,
+            analysis: {
+              ...analysis,
+              timestamp: new Date().toISOString(),
+              session_id: sessionId
+            }
+          })
+          
+          if(analysis.detections && analysis.detections[0]?.type !== 'none') {
+            console.log(`🤖 Live AI Response for ${sessionId}: ${analysis.detections[0].description}`)
+          }
+        } else {
+          throw new Error('No valid analysis could be parsed from AI response.')
+        }
+
       } catch (error) {
-        console.error('🚨 Error sending frame to Gemini:', error)
+        console.error('🚨 Live analysis frame error:', error.message)
+        socket.emit('live_analysis_error', {
+          sessionId,
+          message: `AI analysis failed: ${error.message}`
+        })
+      } finally {
+        isAnalyzing = false
       }
     })
 
     // Handle stop live analysis
     socket.on('stop_live_analysis', async () => {
       const sessionId = socket.id
-      const session = liveSessions.get(sessionId)
-      
-      if (session?.geminiSession) {
-        try {
-          await session.geminiSession.disconnect()
-        } catch (error) {
-          console.error('Error disconnecting Gemini session:', error)
-        }
+      activeSockets.delete(sessionId)
+      if (analysisInterval) {
+        clearInterval(analysisInterval)
+        analysisInterval = null
       }
-      
-      liveSessions.delete(sessionId)
+      isAnalyzing = false
       console.log(`🛑 Stopped live analysis for session ${sessionId}`)
     })
 
     // Cleanup on disconnect
     socket.on('disconnect', async () => {
       const sessionId = socket.id
-      const session = liveSessions.get(sessionId)
-      
-      if (session?.geminiSession) {
-        try {
-          await session.geminiSession.disconnect()
-        } catch (error) {
-          console.error('Error cleaning up Gemini session:', error)
-        }
+      if (activeSockets.has(sessionId)) {
+        activeSockets.delete(sessionId)
+        console.log(`🔌 Cleaned up active session on disconnect: ${sessionId}`)
       }
-      
-      liveSessions.delete(sessionId)
+      if (analysisInterval) {
+        clearInterval(analysisInterval)
+      }
+      isAnalyzing = false
     })
   })
 }
@@ -303,12 +305,12 @@ router.post('/analyze-frame', async (req, res) => {
             throw new Error('No JSON found in response')
           }
         } catch (parseError) {
-          analysis = {
-            urgent: false,
-            detections: [],
-            instructions: ['בדוק ידנית', 'דווח למרכז השליטה'],
-            priority: 'low'
-          }
+          console.warn('⚠️ Failed to parse AI response from manual analysis')
+          return res.status(500).json({
+            success: false,
+            error: 'AI_RESPONSE_PARSE_ERROR',
+            message: 'The AI returned a response that could not be understood.'
+          })
         }
 
         return res.json({
@@ -324,7 +326,11 @@ router.post('/analyze-frame', async (req, res) => {
 
       } catch (aiError) {
         console.error('🚨 Gemini AI failed:', aiError.message)
-        return performMockAnalysis(unitId, res)
+        return res.status(500).json({ 
+          success: false, 
+          error: 'AI_ANALYSIS_FAILED', 
+          message: aiError.message 
+        })
       }
     } else {
       return performMockAnalysis(unitId, res)

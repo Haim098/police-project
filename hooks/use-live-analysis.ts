@@ -12,21 +12,30 @@ interface LiveAnalysisResult {
     description: string
     location: string
     action_required: string
+    bounding_box?: {
+      x: number
+      y: number
+      width: number
+      height: number
+    }
   }>
   instructions: string[]
   priority: string
   timestamp: string
   session_id?: string
   isMock?: boolean
+  analysis?: LiveAnalysisResult
 }
 
 interface UseLiveAnalysisProps {
   unitId: string
   onAnalysisResult?: (result: LiveAnalysisResult) => void
   onStatusChange?: (status: 'disconnected' | 'connecting' | 'ready' | 'analyzing') => void
+  onReady?: (data: { sessionId: string; message: string; isMock?: boolean }) => void
+  onError?: (error: { message: string }) => void
 }
 
-export function useLiveAnalysis({ unitId, onAnalysisResult, onStatusChange }: UseLiveAnalysisProps) {
+export function useLiveAnalysis({ unitId, onAnalysisResult, onStatusChange, onReady, onError }: UseLiveAnalysisProps) {
   const [isConnected, setIsConnected] = useState(false)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const sessionIdRef = useRef<string | null>(null)
@@ -67,6 +76,7 @@ export function useLiveAnalysis({ unitId, onAnalysisResult, onStatusChange }: Us
         setIsAnalyzing(true)
         isActivatedRef.current = true
         onStatusChange?.('ready')
+        onReady?.(data)
         console.log('🤖 Live AI analysis ready:', data.message)
         
         if (data.isMock) {
@@ -91,6 +101,12 @@ export function useLiveAnalysis({ unitId, onAnalysisResult, onStatusChange }: Us
         }
       })
 
+      websocketService.onMessage('live_analysis_error', (error) => {
+        console.error('🚨 Live analysis error from server:', error)
+        onError?.(error)
+        stopLiveAnalysis()
+      })
+
       // Start live analysis
       websocketService.sendMessage('start_live_analysis', { unitId })
       onStatusChange?.('analyzing')
@@ -102,7 +118,7 @@ export function useLiveAnalysis({ unitId, onAnalysisResult, onStatusChange }: Us
       setIsAnalyzing(false)
       isActivatedRef.current = false
     }
-  }, [unitId, onAnalysisResult, onStatusChange])
+  }, [unitId, onAnalysisResult, onStatusChange, onReady, onError])
 
   const stopLiveAnalysis = useCallback(() => {
     if (!isActivatedRef.current) {
@@ -118,6 +134,7 @@ export function useLiveAnalysis({ unitId, onAnalysisResult, onStatusChange }: Us
       // Clean up listeners
       websocketService.offMessage('live_analysis_ready')
       websocketService.offMessage('live_analysis_result')
+      websocketService.offMessage('live_analysis_error')
       
       setIsConnected(false)
       setIsAnalyzing(false)
