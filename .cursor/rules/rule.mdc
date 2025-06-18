@@ -1,0 +1,105 @@
+---
+description: זה האפיון של האפליקצייה תיאור הטכנולוגיות ושלבי הפיתוח יש לבחון כל פעם לפני שמתקדמים הלאה בשלבי הפיתוח
+globs: 
+alwaysApply: false
+---
+# RescuerLens – מסמך אפיון
+
+## 1. תקציר מנהלים
+RescuerLens היא מערכת סיוע חכמה לכוחות חירום (משטרה, כיבוי אש, מד"א ופיקוד העורף) באירועי רב-נפגעים. האפליקציה מאפשרת הזרמת וידאו חי מהשטח למרכז שליטה, שילוב ניתוח בינה מלאכותית בזמן אמת והעברת הנחיות ובקרה דו-כיוונית.
+
+## 2. מצב קיים
+* **Frontend**: אפליקציית Next.js עם Tailwind ו-shadcn/ui.
+  * דפים עיקרים:
+    * `HomePage` – בחירת ממשק.
+    * `ControlCenter` – לוח בקרה מדמה מפת יחידות, התראות וזרמי וידאו.
+    * `FieldUnit` – מסך יחידה בשטח עם מצלמה ולחצני שליטה.
+* **Backend**: טרם קיים. נוצר פרויקט Supabase בשם `police-mvp` אך לא בוצע חיבור.
+* **AI**: אין אינטגרציה בפועל ל-Gemini 2.5 Flash, קיים רק UI הדמיית זיהויים.
+
+## 3. בעלי עניין
+* כוחות חירום בשטח – משתמשי אפליקציית Field Unit.
+* מרכז שליטה – משתמשי ממשק Control Center.
+* מפקדי מטה ומקבלי החלטות.
+* צוות פיתוח DevOps ו-AI.
+
+## 4. ארכיטקטורה מתוכננת
+1. **Frontend (Web + Mobile-Web)**
+   * Next.js 14 (App Router, SSR) עם TypeScript.
+   * Tailwind + shadcn/ui לרכיבי UI.
+   * WebRTC/WebTransport להזרמת וידאו מהדפדפן.
+   * WebSocket מוצפן (wss) לקישור דו-כיווני מול השרת.
+2. **Backend (Node/Express או Fastify)**
+   * Proxy מאובטח ל-Gemini Live API – מסתיר את `GEMINI_KEY`.
+   * Endpoints REST/GraphQL ל-CRUD יחידות, התראות והגדרות.
+   * WebSocket Gateway (Socket.IO או WS) לשידור נתונים בזמן אמת.
+3. **Supabase**
+   * Auth – הרשמת משתמשים (Magic Link) ותפקידי RBAC (Police, Fire, Medical, HQ).
+   * Postgres: טבלאות `units`, `alerts`, `ai_detections`, `instructions`.
+   * Edge Functions – טריגרים למייל/SMS (Twilio) ו-RLS policies.
+4. **AI Service**
+   * Google Gemini `gemini-live-2.5-flash`.
+   * שליחת Frames כ-base64, קבלת תשובות TEXT (ובהמשך AUDIO).
+5. **Notifications**
+   * אינטגרציה ל-Twilio (SMS/WhatsApp) ו-SendGrid (Email).
+
+## 5. דרישות פונקציונליות
+1. הזרמת וידאו חי משטח ➜ מרכז שליטה.
+2. ניתוח AI בזמן אמת:
+   * זיהוי אש, עשן, אנשים, נפגעים, חוטי חשמל, נזק מבני.
+3. הנחיות קוליות וטקסטואליות לשוטר.
+4. הצגת כל היחידות במפה עם סטטוס.
+5. מערכת התראות עם אישורים (Acknowledgement).
+6. תקשורת דו-כיוונית (צ׳אט/קול) בין מרכז לשטח.
+7. לוגים ודוחות סטטיסטיים (כמות התראות, זמני תגובה).
+
+## 6. דרישות לא-פונקציונליות
+* Latency < 1.5 שנ׳ להודעת AI.
+* אבטחת מידע (TLS 1.3, RLS ב-DB, הצפנת מדיה זורמת).
+* זמינות 99.9% בזמן אירוע חרום.
+* תמיכה בדפדפנים ניידים מודרניים (Chrome, Safari iOS).
+* לוקליזציה מלאה לעברית (RTL) ואנגלית.
+
+## 7. תכנון בסיס נתונים (Supabase)
+| טבלה | שדות עיקריים |
+|-------|---------------|
+| units | id (uuid), name, type, status, officer_name, battery, lat, lng, last_update |
+| alerts | id, unit_id FK, type, severity, message, location, timestamp, acknowledged |
+| ai_detections | id, unit_id FK, frame_id, detection_type, confidence, description, recommendation, severity, timestamp |
+| instructions | id, unit_id FK, message, type, timestamp, acknowledged |
+
+RLS: הרשאות קריאה/כתיבה לפי תפקיד ומשתמש.
+
+## 8. שלבי פיתוח מוצעים (High-Level)
+1. **תשתית** – קונפיגורציית Monorepo, ESLint, Prettier, Husky.
+2. **Supabase & Auth** – חיבור, הגדרת טבלאות ו-RLS, OAuth אם נדרש.
+3. **WebSocket Gateway** – יצירת שירות real-time בין הלקוח לשרת.
+4. **הזרמת וידאו בסיסית** – WebRTC peer-to-server (ללא AI).
+5. **AI Proxy** – חיבור Gemini Live API והדגמת זיהוי מסגרת.
+6. **סנכרון נתונים** – כתיבת נתוני יחידות/התראות ל-Supabase.
+7. **UI דינמי** – קישור הדשבורד וה-FE ל-supabase & websocket.
+8. **התראות & הודעות** – אינטגרציה Twilio/SendGrid.
+9. **בדיקות, QA והקשחת אבטחה**.
+10. **Deployment** – Vercel (FE) + Fly.io/Render (BE) + Supabase.
+
+## 9. סיכונים ואתגרים
+* עומס רוחב-פס בעת אירוע המוני.
+* דיוק מודל AI בסביבת עשן/תאורה נמוכה.
+* סוללת מכשירים ניידים ושימור אנרגיה.
+* פרטיות וצילום במרחב ציבורי.
+
+## 10. Roadmap ב-High-Level (12 שבועות)
+| שבוע | יעדים |
+|------|-------|
+| 1-2 | תשתית + Supabase + Auth |
+| 3-4 | WebSocket + מודל AI demo |
+| 5-6 | הזרמת וידאו יציבה + כתיבת דטה |
+| 7-8 | UI דינמי + ניהול התראות |
+| 9-10 | התראות חיצוניות + קול |
+| 11 | QA, שיפור ביצועים |
+| 12 | השקה ו-Post-mortem |
+
+---
+
+
+*נערך ע״י צוות הפיתוח – גרסה 0.1* 
