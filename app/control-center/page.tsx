@@ -447,11 +447,24 @@ export default function ControlCenter() {
                               <span className="text-xs font-medium uppercase">
                                 {detection.type === 'fire' && 'שריפה'}
                                 {detection.type === 'smoke' && 'עשן'}
+                                {detection.type === 'smoke_black' && 'עשן שחור'}
+                                {detection.type === 'smoke_white' && 'עשן לבן'}
                                 {detection.type === 'person' && 'אדם'}
+                                {detection.type === 'person_adult' && 'אדם מבוגר'}
                                 {detection.type === 'child' && 'ילד'}
+                                {detection.type === 'person_child' && 'ילד'}
+                                {detection.type === 'person_casualty' && 'נפגע'}
                                 {detection.type === 'gas_tank' && 'מיכל גז'}
                                 {detection.type === 'wire' && 'חוט חשמל'}
                                 {detection.type === 'structural_damage' && 'נזק מבני'}
+                                {detection.type === 'door_open' && 'דלת פתוחה'}
+                                {detection.type === 'door_closed' && 'דלת סגורה'}
+                                {detection.type === 'door_broken' && 'דלת שבורה'}
+                                {detection.type === 'electrical_hazard' && 'סכנת חשמל'}
+                                {detection.type === 'explosion_risk_vehicle' && 'סכנת פיצוץ רכב'}
+                                {detection.type === 'explosion_risk_cylinder' && 'סכנת פיצוץ מיכל'}
+                                {detection.type === 'signs_of_life_children' && 'סימני הימצאות ילדים'}
+                                {detection.type === 'other_hazard' && 'סכנה אחרת'}
                               </span>
                               <span className="text-xs text-gray-500">
                                 {Math.round(detection.confidence * 100)}% ביטחון
@@ -460,11 +473,24 @@ export default function ControlCenter() {
                             <AlertDescription className="text-sm">
                               זוהה {detection.type === 'fire' && 'אש פעילה'}
                               {detection.type === 'smoke' && 'עשן כבד'}
+                              {detection.type === 'smoke_black' && 'עשן שחור סמיך'}
+                              {detection.type === 'smoke_white' && 'עשן לבן'}
                               {detection.type === 'person' && 'אדם'}
+                              {detection.type === 'person_adult' && 'אדם מבוגר'}
                               {detection.type === 'child' && 'ילד'}
+                              {detection.type === 'person_child' && 'ילד'}
+                              {detection.type === 'person_casualty' && 'נפגע'}
                               {detection.type === 'gas_tank' && 'מיכל גז'}
                               {detection.type === 'wire' && 'חוט חשמל חשוף'}
                               {detection.type === 'structural_damage' && 'נזק מבני'}
+                              {detection.type === 'door_open' && 'דלת פתוחה'}
+                              {detection.type === 'door_closed' && 'דלת סגורה'}
+                              {detection.type === 'door_broken' && 'דלת שבורה'}
+                              {detection.type === 'electrical_hazard' && 'סכנת התחשמלות'}
+                              {detection.type === 'explosion_risk_vehicle' && 'רכב בסכנת פיצוץ'}
+                              {detection.type === 'explosion_risk_cylinder' && 'מיכל בסכנת פיצוץ'}
+                              {detection.type === 'signs_of_life_children' && 'סימנים לילדים במקום'}
+                              {detection.type === 'other_hazard' && 'סכנה לא מזוהה אחרת'}
                             </AlertDescription>
                             <div className="text-xs text-gray-400 mt-1">
                               {new Date(detection.created_at || '').toLocaleTimeString('he-IL')}

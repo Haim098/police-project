@@ -7,38 +7,227 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
 
 // Emergency analysis prompt in Hebrew
 const EMERGENCY_ANALYSIS_PROMPT = `
-אתה מערכת AI מתקדמת לזיהוי חירום עבור כוחות הביטחון בישראל. אתה רואה וידאו בזמן אמת מיחידת שטח.
+אתה מערכת AI מתקדמת לניתוח וידאו בזמן אמת עבור כוחות חירום והצלה בישראל. משימתך היא לזהות סכנות, נפגעים, ופרטים קריטיים בזירת אירוע רב נפגעים.
 
-נתח כל מסגרת וחפש:
-🔥 שריפות, עשן (שחור/לבן), להבות
-👥 אנשים בסיכון, נפגעים, ילדים, מבוגרים
-🏠 נזק מבני, קירות שבורים, דלתות שבורות
-⚡ חוטי חשמל חשופים, סכנות חשמליות  
-💥 חומרים מסוכנים, בלוני גז, רכבים בוערים
-🚨 כל איום או סכנה אחרת
+נתח כל מסגרת וידאו בקפידה וחפש אחר המרכיבים הבאים. היה ספציפי ככל האפשר:
 
-תן תשובה מיידית בפורמט הזה:
+🔥 **סכנות אש ופיצוץ:**
+    - אש גלויה ולהבות.
+    - עשן: הבחן בין עשן שחור (בעירת חומרים פלסטיים/כימיים) לבין עשן לבן (אדים/חומרים אורגניים). ציין צבע וסמיכות.
+    - בלוני גז או מכלים דומים בעלי פוטנציאל פיצוץ.
+    - רכבים בוערים: התרע על סכנת פיצוץ או הימצאות אנשים לכודים.
+
+👥 **אנשים ונפגעים:**
+    - זיהוי וספירת אנשים: נסה להבחין בין ילדים, נשים, גברים, ומבוגרים אם אפשרי.
+    - הערכת מצב נפגעים: חפש סימנים ויזואליים ראשוניים כמו דימום בולט, חוסר תנועה, או מצוקה נראית לעין.
+    - סימני חיים ונוכחות (במיוחד בתוך מבנים):
+        - חפצים המעידים על נוכחות אנשים: צעצועים, בגדי ילדים, עגלות תינוק.
+        - סימנים ספציфиים המעידים על נוכחות תינוקות/ילדים.
+
+🏠 **מצב מבנים:**
+    - נזק מבני כללי: הריסה חלקית, קריסה, סדקים משמעותיים בקירות.
+    - דלתות: ציין מצב (סגורה, פתוחה, שבורה, חסומה). הערך אם מהווה נתיב כניסה אפשרי או מסוכן.
+    - חלונות: ציין מצב (שבורים, פתוחים, סגורים).
+    - סכנות מבניות: דלתות או חלונות שבורים שעלולים ליפול, קירות לא יציבים, תקרות פגועות.
+    - נסה לזהות פרטי מיקום בתוך מבנה אם נראים: מספרי דלתות, שלטים.
+
+⚡ **מפגעים חשמליים:**
+    - חוטי חשמל חשופים, קרועים או פגומים.
+    - שנאים או ארונות חשמל פגועים.
+    - סימני קצר חשמלי (ניצוצות).
+
+🚨 **איומים וסכנות נוספות:**
+    - כל איום או סכנה מיידית אחרת שלא פורטה לעיל.
+
+**פורמט תגובה:**
+עליך לספק תגובה בפורמט JSON בלבד. אם לא זוהה דבר משמעותי, השב אובייקט JSON ריק או עם \`"urgent": false\` וללא זיהויים.
+
+\`\`\`json
 {
-  "urgent": true/false,
+  "urgent": true/false, // האם קיימת סכנה מיידית או ממצא קריטי?
   "detections": [
     {
-      "type": "fire/smoke/person/structural_damage/electrical_hazard/explosion_risk",
-      "severity": "low/medium/high/critical", 
-      "confidence": 0.0-1.0,
-      "description": "תיאור בעברית",
-      "location": "מיקום באזור",
-      "action_required": "פעולה נדרשת"
+      "type": "fire | smoke_black | smoke_white | person_adult | person_child | person_casualty | structural_damage | door_open | door_closed | door_broken | electrical_hazard | explosion_risk_vehicle | explosion_risk_cylinder | signs_of_life_children | other_hazard",
+      "severity": "low | medium | high | critical", // רמת החומרה
+      "confidence": 0.0-1.0, // רמת הביטחון בזיהוי
+      "description": "תיאור מפורט בעברית של מה שזוהה. כלול פרטים רלוונטיים מהניתוח.",
+      "location_in_frame": "תיאור מיקום הזיהוי בתוך מסגרת הוידאו (לדוגמה: 'בצד ימין למעלה', 'במרכז התמונה, ליד הדלת האדומה'). חפש ציוני דרך.",
+      "action_required": "המלצה לפעולה מיידית עבור הכוח בשטח (לדוגמה: 'בדוק מצב הנפגע', 'התרחק מהאזור', 'חפש מקור חשמל לניתוק')."
     }
+    // ניתן להוסיף זיהויים נוספים במערך זה
   ],
   "instructions": [
-    "הנחיה 1 לכוח בשטח",
-    "הנחיה 2 לכוח בשטח"
+    // הנחיות קוליות וטקסטואליות קריטיות וספציפיות למצב, לדוגמה:
+    // "שים לב, זוהתה שריפה! נסה לנתק את זרם החשמל בארון לפני כניסה."
+    // "התראה! זוהו סימנים המעידים על הימצאות ילדים בתוך המבנה. חפש אותם בזהירות."
+    // "סכנת פיצוץ! הדלת סגורה ויש עשן כבד. פתיחת הדלת עלולה לגרום לפיצוץ עקב חדירת חמצן – היזהר!"
+    // "עשן שחור כבד! מעיד ככל הנראה על חומרים בוערים. הימנע משאיפה, חפש נתיב יציאה בטוח."
+    // "זוהו חוטי חשמל חשופים. אל תתקרב! נסה לאתר את ארון החשמל ולנתק את הזרם."
   ],
-  "priority": "low/medium/high/critical"
+  "priority": "low | medium | high | critical" // עדיפות כללית של המצב
 }
+\`\`\`
 
-רק אם זיהית משהו חשוב - השב. אם הכל רגיל - אל תשיב כלום.
+**דגשים חשובים:**
+- ספק הנחיות קצרות וברורות במידת האפשר.
+- התמקד בזיהויים בעלי משמעות לבטיחות והצלת חיים.
+- אם יש מספר זיהויים, כלול את כולם במערך \`detections\`.
+- עבור \`instructions\`, ספק עד 3 הנחיות קריטיות ביותר בהתאם לממצאים.
 `
+
+const mockScenarios = [
+    // Fire and Explosion Risks
+    {
+        type: 'fire',
+        severity: 'critical',
+        confidence: 0.95,
+        description: 'אש גלויה ולהבות גבוהות מתפשטות במהירות במבנה.',
+        location_in_frame: 'מרכז התמונה, קומה שנייה של הבניין השמאלי',
+        action_required: 'התרחק מיידית! דווח על היקף השריפה והאם יש לכודים.',
+        instructions: [
+            "סכנת התפשטות מהירה! פנה את כל האזרחים מהסביבה הקרובה.",
+            "בדוק אפשרות לניתוק מקורות גז וחשמל אם ניתן לעשות זאת בבטחה.",
+            "הערך כיוון רוח והשפעה על התפשטות האש והעשן."
+        ],
+        priority: 'critical',
+        urgent: true,
+    },
+    {
+        type: 'smoke_black',
+        severity: 'high',
+        confidence: 0.88,
+        description: 'עשן שחור וסמיך מיתמר מחלונות הקומה הראשונה. ריח חריף של פלסטיק שרוף.',
+        location_in_frame: 'חלק תחתון של המבנה המרכזי, יוצא מחלונות',
+        action_required: 'הימנע משאיפת העשן! השתמש בציוד מגן נשימתי. חפש נתיב יציאה בטוח.',
+        instructions: [
+            "עשן שחור מעיד על בעירת חומרים מסוכנים. אין להיכנס ללא מיגון מתאים!",
+            "אזהר כוחות נוספים לגבי סוג העשן.",
+            "בדוק אם יש אנשים באזור המושפע מהעשן."
+        ],
+        priority: 'high',
+        urgent: true,
+    },
+    {
+        type: 'explosion_risk_cylinder',
+        severity: 'critical',
+        confidence: 0.92,
+        description: 'זוהו מספר בלוני גז גדולים בסמוך למקור אש. חלקם נראים נפוחים.',
+        location_in_frame: 'בצד ימין של הרכב הבוער, ליד קיר המבנה',
+        action_required: 'סכנת פיצוץ מיידית! פנה את האזור ברדיוס נרחב. אל תנסה לכבות.',
+        instructions: [
+            "סכנת פיצוץ חמורה! הרחק את כולם למרחק בטוח של לפחות 100 מטר.",
+            "דווח מיידית למרכז על הימצאות בלוני גז באזור האש.",
+            "אין להתיז מים ישירות על בלונים חמים."
+        ],
+        priority: 'critical',
+        urgent: true,
+    },
+    // People and Casualties
+    {
+        type: 'person_casualty',
+        severity: 'critical',
+        confidence: 0.85,
+        description: 'אדם שוכב ללא תנועה ליד הכניסה למבנה. נראה דימום מאזור הרגל.',
+        location_in_frame: 'משמאל לדלת הכניסה הראשית, על המדרכה',
+        action_required: 'גש לנפגע בזהירות, הערך מצב הכרה ונשימה. דווח על מצבו.',
+        instructions: [
+            "בדוק הכרה ונשימה. התחל בפעולות החייאה במידת הצורך.",
+            "עצור דימומים פורצים. דווח על מספר נפגעים ומצבם.",
+            "ודא שהאזור בטוח לפני הטיפול."
+        ],
+        priority: 'critical',
+        urgent: true,
+    },
+    {
+        type: 'person_child',
+        severity: 'high',
+        confidence: 0.75,
+        description: 'ילד כבן 5 נראה מבוהל ומסתתר מאחורי רכב חונה.',
+        location_in_frame: 'מאחורי הרכב הכחול בצד שמאל של הרחוב',
+        action_required: 'גש לילד בזהירות, הרגע אותו וודא שהוא בטוח. חפש הורים או אפוטרופוס.',
+        instructions: [
+            "דבר אל הילד בקול רגוע ומרגיע.",
+            "בדוק אם הילד פצוע או במצוקה.",
+            "נסה לאתר את הוריו או מבוגר אחראי."
+        ],
+        priority: 'high',
+        urgent: true,
+    },
+    {
+        type: 'signs_of_life_children',
+        severity: 'medium',
+        confidence: 0.70,
+        description: 'צעצועים ובגדי ילדים מפוזרים ליד דלת דירה פתוחה חלקית בקומה שלישית.',
+        location_in_frame: 'קומה שלישית, דירה אמצעית, ניתן לראות צעצועים דרך הדלת',
+        action_required: 'יש סימנים להימצאות ילדים בדירה. בצע סריקה בזהירות מוגברת.',
+        instructions: [
+            "הודע על סימנים אפשריים לילדים לכודים.",
+            "בצע כניסה שקטה ובדוק חדרים בקפידה.",
+            "קרא בקול ושאל אם יש מישהו בפנים."
+        ],
+        priority: 'medium',
+        urgent: false,
+    },
+    // Structural Damage
+    {
+        type: 'structural_damage',
+        severity: 'high',
+        confidence: 0.80,
+        description: 'קיר חיצוני של מבנה נראה סדוק ומעוות. חלק מהלבנים נפלו.',
+        location_in_frame: 'הקיר הימני של המבנה הגבוה, ליד הפינה',
+        action_required: 'התרחק מהקיר מחשש לקריסה. אבטח את האזור ומנע גישה.',
+        instructions: [
+            "סכנת קריסה! אל תתקרב לקיר הפגוע.",
+            "הצב סרטי אזהרה והרחק אזרחים.",
+            "דווח על הנזק למרכז והמתן להערכת מהנדס."
+        ],
+        priority: 'high',
+        urgent: true,
+    },
+    {
+        type: 'door_broken',
+        severity: 'medium',
+        confidence: 0.90,
+        description: 'דלת כניסה למחסן שבורה ותלויה על ציר אחד. נתיב כניסה אפשרי אך מסוכן.',
+        location_in_frame: 'דלת המחסן האפור בקצה החצר',
+        action_required: 'היכנס בזהירות רבה אם נדרש. שים לב ליציבות הדלת והמשקוף.',
+        instructions: [
+            "הדלת אינה יציבה, היזהר בעת מעבר.",
+            "בדוק אם יש סכנות נוספות מאחורי הדלת לפני כניסה מלאה.",
+            "דווח על מצב הדלת."
+        ],
+        priority: 'medium',
+        urgent: false,
+    },
+    // Electrical Hazards
+    {
+        type: 'electrical_hazard',
+        severity: 'critical',
+        confidence: 0.85,
+        description: 'חוטי חשמל קרועים חשופים על הרצפה ליד שלולית מים. נראים ניצוצות קלים.',
+        location_in_frame: 'על המדרכה ליד עמוד תאורה שנפל, קרוב לשלולית',
+        action_required: 'סכנת התחשמלות חמורה! אל תתקרב ואל תיגע במים. הרחק את כולם.',
+        instructions: [
+            "סכנת מוות! אין להתקרב לחוטים או למים!",
+            "הזעק מיידית את חברת החשמל לניתוק הזרם.",
+            "חסום את האזור ברדיוס גדול."
+        ],
+        priority: 'critical',
+        urgent: true,
+    },
+    // No detection (important for testing "all clear" scenarios)
+    {
+        type: 'none',
+        severity: 'low',
+        confidence: 0.99,
+        description: 'השטח נראה פנוי מסכנות מיידיות.',
+        location_in_frame: 'כללי',
+        action_required: 'המשך בסיור ובמעקב.',
+        instructions: ["הכל נראה שקט כרגע. המשך בזהירות."],
+        priority: 'low',
+        urgent: false,
+    }
+];
 
 // Live Analysis integration with existing Socket.IO
 function setupLiveAnalysis(io) {
@@ -204,57 +393,35 @@ function setupMockLiveAnalysis(socket, sessionId, unitId) {
   // Mock analysis every 5 seconds
   const mockInterval = setInterval(() => {
     if (Math.random() > 0.7) { // 30% chance of detection
-      const mockDetections = [
-        {
-          type: 'fire',
-          severity: 'critical',
-          confidence: 0.85,
-          description: 'זוהתה שריפה פעילה',
-          location: 'חלק מרכזי של השטח',
-          action_required: 'פנה מהאזור מיידית'
-        },
-        {
-          type: 'smoke',
-          severity: 'high',
-          confidence: 0.78,
-          description: 'זוהה עשן כבד',
-          location: 'בחלק הצפוני',
-          action_required: 'הימנע משאיפה'
-        },
-        {
-          type: 'person',
-          severity: 'medium',
-          confidence: 0.92,
-          description: 'זוהו אנשים באזור',
-          location: 'ליד הכניסה',
-          action_required: 'בדוק מצב הנפגעים'
-        }
-      ]
+      const selectedScenario = mockScenarios[Math.floor(Math.random() * mockScenarios.length)];
       
-      const detection = mockDetections[Math.floor(Math.random() * mockDetections.length)]
+      const analysis = {
+        urgent: selectedScenario.type === 'none' ? false : selectedScenario.urgent,
+        detections: selectedScenario.type === 'none' ? [] : [{
+          type: selectedScenario.type,
+          severity: selectedScenario.severity,
+          confidence: selectedScenario.confidence,
+          description: selectedScenario.description,
+          location_in_frame: selectedScenario.location_in_frame,
+          action_required: selectedScenario.action_required,
+        }],
+        instructions: selectedScenario.instructions,
+        priority: selectedScenario.priority,
+        timestamp: new Date().toISOString(),
+        session_id: sessionId,
+        isMock: true
+      };
       
       socket.emit('live_analysis_result', {
         sessionId,
-        analysis: {
-          urgent: detection.severity === 'critical',
-          detections: [detection],
-          instructions: [
-            'דווח למרכז השליטה',
-            detection.action_required,
-            'המתן להוראות נוספות'
-          ],
-          priority: detection.severity,
-          timestamp: new Date().toISOString(),
-          session_id: sessionId,
-          isMock: true
-        }
-      })
+        analysis
+      });
     }
-  }, 5000)
+  }, 5000);
   
   socket.on('disconnect', () => {
-    clearInterval(mockInterval)
-  })
+    clearInterval(mockInterval);
+  });
 }
 
 // Legacy analyze-frame endpoint (still available for manual analysis)
@@ -265,138 +432,57 @@ router.post('/analyze-frame', async (req, res) => {
     if (!unitId) {
       return res.status(400).json({
         error: 'Unit ID is required'
-      })
+      });
     }
 
-    console.log(`📸 Manual frame analysis for unit ${unitId}`)
+    console.log(`📸 Manual frame analysis for unit ${unitId}`);
 
     // Check if we have real frame data
     if (frame && frame !== 'mock_frame_data' && frame.startsWith('data:image')) {
       if (!process.env.GEMINI_API_KEY) {
-        console.warn('⚠️ Gemini API key not found, using mock analysis')
-        return performMockAnalysis(unitId, res)
+        console.warn('⚠️ Gemini API key not found, using mock analysis');
+        return performMockAnalysis(unitId, res);
       }
 
       try {
-        const frameImage = processFrameData(frame)
+        const frameImage = processFrameData(frame);
         if (!frameImage) {
-          throw new Error('Invalid frame data format')
+          throw new Error('Invalid frame data format');
         }
 
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
         
         const result = await model.generateContent([
           EMERGENCY_ANALYSIS_PROMPT,
           frameImage
-        ])
+        ]);
         
-        const response = await result.response
-        const analysisText = response.text()
+        const response = await result.response;
+        const analysisText = response.text();
         
         // Try to parse JSON response
-        let analysis
+        let analysisResponse;
         try {
-          const jsonMatch = analysisText.match(/\{[\s\S]*\}/)
+          const jsonMatch = analysisText.match(/\{[\s\S]*\}/);
           if (jsonMatch) {
-            analysis = JSON.parse(jsonMatch[0])
+            analysisResponse = JSON.parse(jsonMatch[0]);
           } else {
-            throw new Error('No JSON found in response')
+            throw new Error('No JSON found in response');
           }
         } catch (parseError) {
-          analysis = {
+          analysisResponse = {
             urgent: false,
             detections: [],
             instructions: ['בדוק ידנית', 'דווח למרכז השליטה'],
             priority: 'low'
-          }
+          };
         }
 
         return res.json({
           success: true,
           unitId,
           analysis: {
-            ...analysis,
-            timestamp: new Date().toISOString(),
-            processing_time: '2.1s',
-            ai_model: 'gemini-1.5-flash'
-          }
-        })
-
-      } catch (aiError) {
-        console.error('🚨 Gemini AI failed:', aiError.message)
-        return performMockAnalysis(unitId, res)
-      }
-    } else {
-      return performMockAnalysis(unitId, res)
-    }
-
-  } catch (error) {
-    console.error('AI Analysis error:', error)
-    res.status(500).json({
-      error: 'AI analysis failed',
-      message: error.message
-    })
-  }
-})
-
-// Helper function to process base64 frame data
-function processFrameData(frameData) {
-  if (!frameData || typeof frameData !== 'string') {
-    return null
-  }
-  
-  const base64Data = frameData.includes(',') ? frameData.split(',')[1] : frameData
-  
-  return {
-    inlineData: {
-      data: base64Data,
-      mimeType: 'image/jpeg'
-    }
-  }
-}
-
-// Mock analysis helper (unchanged)
-function performMockAnalysis(unitId, res) {
-  setTimeout(() => {
-    const scenarios = [
-      {
-        type: 'fire',
-        confidence: 0.85,
-        severity: 'critical',
-        description: 'זוהתה שריפה פעילה באזור',
-        location: 'חלק מרכזי',
-        action_required: 'פנה מהאזור מיידית'
-      },
-      {
-        type: 'smoke',
-        confidence: 0.78,
-        severity: 'high', 
-        description: 'זוהה עשן כבד',
-        location: 'חלק צפוני',
-        action_required: 'הימנע משאיפה'
-      },
-      {
-        type: 'person',
-        confidence: 0.92,
-        severity: 'medium',
-        description: 'זוהו אנשים באזור',
-        location: 'ליד הכניסה',
-        action_required: 'בדוק מצב הנפגעים'
-      }
-    ]
-
-    const shouldDetect = Math.random() > 0.6
-    const selectedScenario = scenarios[Math.floor(Math.random() * scenarios.length)]
-
-    const analysis = {
-      urgent: shouldDetect && selectedScenario.severity === 'critical',
-      detections: shouldDetect ? [selectedScenario] : [],
-      instructions: shouldDetect ? [
-        'דווח למרכז השליטה',
-        selectedScenario.action_required,
-        'המתן להוראות נוספות'
-      ] : ['המשך בסיור רגיל'],
-      priority: shouldDetect ? selectedScenario.severity : 'low',
+            ...analysisResponse,
       timestamp: new Date().toISOString(),
       processing_time: '1.2s',
       ai_model: 'mock_system'
