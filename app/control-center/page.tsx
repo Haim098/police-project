@@ -251,8 +251,8 @@ export default function ControlCenter() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center" dir="rtl">
-        <div className="text-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center" dir="rtl" suppressHydrationWarning>
+        <div className="text-center" suppressHydrationWarning>
           <Eye className="w-12 h-12 text-red-600 animate-spin mx-auto mb-4" />
           <p className="text-lg">טוען נתונים...</p>
         </div>
@@ -261,8 +261,8 @@ export default function ControlCenter() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4" dir="rtl">
-      <div className="max-w-[1920px] mx-auto space-y-6">
+    <div className="min-h-screen bg-gray-50 p-4" dir="rtl" suppressHydrationWarning>
+      <div className="max-w-[1920px] mx-auto space-y-6" suppressHydrationWarning>
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="flex items-center justify-between">

@@ -10,7 +10,7 @@ const supabase = createClient(
 const connectedUnits = new Map()
 const connectedControlCenters = new Map()
 
-function initializeSocket(io) {
+function initializeSocketService(io) {
   console.log('🔌 Initializing WebSocket service...')
 
   io.on('connection', (socket) => {
@@ -58,6 +58,6 @@ function initializeSocket(io) {
 
 // Export functions for external use
 module.exports = {
-  initializeSocket,
+  initializeSocketService,
   getConnectedUnits: () => Array.from(connectedUnits.keys())
 } 

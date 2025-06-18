@@ -32,28 +32,62 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { supabase, Detection, Event } from "@/lib/supabase"
 import websocketService from "@/lib/websocket"
 import { useCamera } from "@/hooks/use-camera"
+import { useLiveAnalysis } from "@/hooks/use-live-analysis"
 
 export default function FieldUnit() {
-  // Camera hook for video functionality
+  // Camera hook
   const {
     videoRef,
-    isPermissionGranted,
     isCameraOn,
     isRecording: isCameraRecording,
+    isPermissionGranted,
     startCamera,
     stopCamera,
     startRecording,
     stopRecording,
     captureFrame,
+    startAutoCapture,
+    stopAutoCapture,
     error: cameraError
   } = useCamera()
-  
+
+  // State definitions
   const [isMicOn, setIsMicOn] = useState(true)
   const [isAudioOn, setIsAudioOn] = useState(true)
   const [batteryLevel, setBatteryLevel] = useState(78)
   const [signalStrength, setSignalStrength] = useState(4)
   const [currentLocation, setCurrentLocation] = useState("רחוב דיזנגוף 50, תל אביב")
   const [unitId, setUnitId] = useState("6686c4a6-4296-4dcc-ad6d-6df415b925f6") // יחידה 001
+  const [lastAnalysis, setLastAnalysis] = useState<any>(null)
+  const [aiError, setAiError] = useState<string | null>(null)
+
+  // Live AI Analysis hook
+  const {
+    isConnected: aiConnected,
+    isAnalyzing,
+    startLiveAnalysis,
+    stopLiveAnalysis,
+    sendFrame
+  } = useLiveAnalysis({
+    unitId,
+    onAnalysisResult: (result) => {
+      console.log('🔍 AI Analysis result:', result)
+      setLastAnalysis(result)
+      
+      // Store detection in database if it's urgent
+      if (result.urgent && result.detections.length > 0) {
+        const detection = result.detections[0]
+        sendDetection(
+          detection.type as Detection['type'],
+          detection.severity as Detection['severity'],
+          detection.confidence
+        )
+      }
+    },
+    onStatusChange: (status) => {
+      console.log('🎯 Live Analysis status:', status)
+    }
+  })
   
   const [detections, setDetections] = useState<Detection[]>([])
   const [instructions, setInstructions] = useState<Event[]>([])
@@ -100,8 +134,19 @@ export default function FieldUnit() {
   const setupWebSocket = async () => {
     try {
       websocketService.connect('http://localhost:3001')
-      await websocketService.registerUnit(unitId)
-      setWsConnected(true)
+      
+      // Wait a bit for connection to establish
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      try {
+        await websocketService.registerUnit(unitId)
+        setWsConnected(true)
+        console.log('✅ WebSocket connected and unit registered')
+      } catch (registrationError) {
+        console.warn('⚠️ Registration failed, but continuing:', registrationError)
+        // Even if registration fails, consider connected if socket is connected
+        setWsConnected(websocketService.connected || false)
+      }
 
       // Listen for commands from control center
       websocketService.onMessage('command_received', (data) => {
@@ -242,23 +287,32 @@ export default function FieldUnit() {
   }
 
   const analyzeFrame = async () => {
+    console.log('🤖 Starting AI analysis...')
+    
     if (!wsConnected) {
+      console.log('❌ WebSocket not connected')
       alert('לא מחובר לשרת AI')
       return
     }
 
     if (!isCameraOn) {
+      console.log('❌ Camera not on')
       alert('אנא הפעל את המצלמה לפני ניתוח AI')
       return
     }
 
     try {
+      console.log('📸 Capturing frame for AI analysis...')
+      
       // Capture current frame from video
       const frameData = captureFrame()
       if (!frameData) {
+        console.log('❌ Failed to capture frame')
         alert('שגיאה בלכידת תמונה מהמצלמה')
         return
       }
+
+      console.log(`🤖 Sending frame to AI server (${frameData.length} chars)...`)
 
       const response = await fetch('http://localhost:3001/api/ai/analyze-frame', {
         method: 'POST',
@@ -271,20 +325,24 @@ export default function FieldUnit() {
         })
       })
 
+      console.log('🤖 AI server response status:', response.status)
       const result = await response.json()
+      console.log('🤖 AI server response:', result)
       
       if (result.success && result.analysis.detections.length > 0) {
         const detection = result.analysis.detections[0]
+        console.log('🎯 Detection found:', detection)
         
         // Auto-send detection to database
         await sendDetection(detection.type, detection.severity, detection.confidence)
         
         alert(`AI זיהה: ${detection.description}\nרמת ביטחון: ${Math.round(detection.confidence * 100)}%`)
       } else {
+        console.log('✅ No detections found')
         alert('AI לא זיהה איומים באזור')
       }
     } catch (error) {
-      console.error('AI Analysis failed:', error)
+      console.error('🚨 AI Analysis failed:', error)
       alert('שגיאה בניתוח AI')
     }
   }
@@ -302,9 +360,50 @@ export default function FieldUnit() {
     }
   }
 
+  const toggleLiveAnalysis = async () => {
+    if (isAnalyzing) {
+      console.log('🛑 Stopping Live AI Analysis...')
+      stopLiveAnalysis()
+      stopAutoCapture()
+    } else {
+      if (!isCameraOn) {
+        alert('אנא הפעל את המצלמה לפני הפעלת ניתוח AI')
+        return
+      }
+      
+      console.log('🎥 Starting Live AI Analysis...')
+      startLiveAnalysis()
+      
+      // Start auto-capture and send frames to AI
+      startAutoCapture((frameData) => {
+        sendFrame(frameData)
+      }, 2000) // Send frame every 2 seconds
+    }
+  }
+
+  // Auto-send detections from live analysis to database
+  useEffect(() => {
+    if (lastAnalysis && lastAnalysis.detections.length > 0) {
+      const detection = lastAnalysis.detections[0]
+      console.log('🤖 Auto-sending live detection:', detection)
+      
+      // Send detection to database
+      sendDetection(detection.type as Detection['type'], detection.severity, detection.confidence)
+      
+      // Show alert to user
+      const alertMessage = `AI זיהה: ${detection.description}\n${detection.action_required}\nרמת ביטחון: ${Math.round(detection.confidence * 100)}%`
+      
+      if (detection.severity === 'critical') {
+        alert('🚨 התראה דחופה! ' + alertMessage)
+      } else {
+        alert('⚠️ זיהוי AI: ' + alertMessage)
+      }
+    }
+  }, [lastAnalysis])
+
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-4" dir="rtl">
-      <div className="max-w-md mx-auto space-y-4">
+    <div className="min-h-screen bg-gray-900 text-white p-4" dir="rtl" suppressHydrationWarning>
+      <div className="max-w-md mx-auto space-y-4" suppressHydrationWarning>
         {/* Header Status Bar */}
         <div className="flex items-center justify-between bg-gray-800 rounded-lg p-3">
           <div className="flex items-center gap-2">
@@ -325,6 +424,10 @@ export default function FieldUnit() {
               <div className={`w-2 h-2 rounded-full ${wsConnected ? 'bg-green-500' : 'bg-red-500'}`} />
               <span className="text-xs">{wsConnected ? 'מחובר' : 'לא מחובר'}</span>
             </div>
+            <div className="flex items-center gap-1">
+              <div className={`w-2 h-2 rounded-full ${aiConnected ? 'bg-blue-500' : 'bg-gray-500'} ${isAnalyzing ? 'animate-pulse' : ''}`} />
+              <span className="text-xs">AI {isAnalyzing ? 'פעיל' : 'כבוי'}</span>
+            </div>
           </div>
         </div>
 
@@ -332,32 +435,33 @@ export default function FieldUnit() {
         <Card className="bg-gray-800 border-gray-700">
           <CardContent className="p-0">
             <div className="bg-black rounded-lg aspect-video flex items-center justify-center relative">
-              {isCameraOn ? (
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  className="w-full h-full object-cover rounded-lg"
-                />
-              ) : (
-              <div className="text-white text-center">
-                <Camera className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                  <p className="text-lg">{isPermissionGranted ? 'מצלמה כבויה' : 'יש צורך בהרשאה למצלמה'}</p>
-                  <p className="text-sm opacity-75">
-                    {isPermissionGranted ? 'לחץ כדי להפעיל' : 'אנא אפשר גישה למצלמה'}
-                  </p>
-                  {!isCameraOn && (
+              {/* Video element - always present but hidden when camera is off */}
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className={`w-full h-full object-cover rounded-lg ${isCameraOn ? 'block' : 'hidden'}`}
+              />
+              
+              {/* Camera off overlay */}
+              {!isCameraOn && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-white text-center p-4">
+                    <Camera className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                    <p className="text-lg mb-2">{isPermissionGranted ? 'מצלמה כבויה' : 'יש צורך בהרשאה למצלמה'}</p>
+                    <p className="text-sm opacity-75 mb-4">
+                      {isPermissionGranted ? 'לחץ כדי להפעיל' : 'אנא אפשר גישה למצלמה'}
+                    </p>
                     <Button 
                       onClick={startCamera} 
-                      className="mt-4 bg-blue-600 hover:bg-blue-700"
-                      disabled={!isPermissionGranted && !isCameraOn}
+                      className="mt-2 bg-blue-600 hover:bg-blue-700"
                     >
                       <Video className="w-4 h-4 mr-2" />
                       הפעל מצלמה
                     </Button>
-                  )}
-              </div>
+                  </div>
+                </div>
               )}
               
               {/* Camera error display */}
@@ -441,18 +545,36 @@ export default function FieldUnit() {
           </Button>
         </div>
 
-        {/* AI Analysis Button */}
+        {/* AI Analysis Buttons */}
         <Card className="bg-gray-800 border-gray-700">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2">
               <ScanLine className="w-5 h-5" />
               ניתוח AI
+              {lastAnalysis && (
+                <Badge className={`mr-2 ${lastAnalysis.urgent ? 'bg-red-600' : 'bg-green-600'}`}>
+                  {lastAnalysis.urgent ? 'דחוף' : 'רגיל'}
+                </Badge>
+              )}
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-3">
+            {/* Live Analysis Toggle */}
+            <Button
+              onClick={toggleLiveAnalysis}
+              className={`w-full h-12 ${isAnalyzing ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'}`}
+              disabled={!isCameraOn}
+            >
+              <ScanLine className={`w-5 h-5 mr-2 ${isAnalyzing ? 'animate-spin' : ''}`} />
+              {!isCameraOn ? 'הפעל מצלמה לניתוח' :
+               isAnalyzing ? 'עצור ניתוח חי' : 'התחל ניתוח חי'}
+            </Button>
+            
+            {/* Manual Analysis Button */}
             <Button
               onClick={analyzeFrame}
-              className="w-full h-12 bg-blue-600 hover:bg-blue-700"
+              variant="outline"
+              className="w-full h-12"
               disabled={!wsConnected || !isCameraOn}
             >
               <ScanLine className="w-5 h-5 mr-2" />
@@ -460,6 +582,59 @@ export default function FieldUnit() {
                !isCameraOn ? 'הפעל מצלמה לניתוח' : 
                'נתח מסגרת נוכחית'}
             </Button>
+
+            {/* AI Status and Errors */}
+            {aiError && (
+              <Alert className="border-red-500 bg-red-950">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertDescription className="text-red-300">
+                  שגיאת AI: {aiError}
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {/* Last Analysis Display */}
+            {lastAnalysis && (
+              <div className="bg-gray-700 rounded-lg p-3 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">ניתוח אחרון</span>
+                  <span className="text-xs text-gray-400">
+                    {new Date(lastAnalysis.timestamp).toLocaleTimeString('he-IL')}
+                  </span>
+                </div>
+                
+                {lastAnalysis.detections.length > 0 ? (
+                  <div className="space-y-2">
+                    {lastAnalysis.detections.map((detection: any, index: number) => (
+                      <div key={index} className={`p-2 rounded border ${getSeverityColor(detection.severity)}`}>
+                        <div className="flex items-center gap-2 mb-1">
+                          {getDetectionIcon(detection.type)}
+                          <span className="text-sm font-medium">{detection.description}</span>
+                          <Badge variant="outline" className="text-xs">
+                            {Math.round(detection.confidence * 100)}%
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-gray-600">{detection.action_required}</p>
+                        {detection.location && (
+                          <p className="text-xs text-gray-500">מיקום: {detection.location}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-400">לא זוהו איומים</p>
+                )}
+
+                {lastAnalysis.instructions.length > 0 && (
+                  <div className="space-y-1">
+                    <span className="text-sm font-medium">הנחיות:</span>
+                    {lastAnalysis.instructions.map((instruction: string, index: number) => (
+                      <p key={index} className="text-xs text-gray-300">• {instruction}</p>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
 

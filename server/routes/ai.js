@@ -1,28 +1,263 @@
 const express = require('express')
-const { GoogleGenerativeAI } = require('@google/generative-ai')
+const { GoogleGenerativeAI, Modality } = require('@google/generative-ai')
 const router = express.Router()
 
 // Initialize Gemini AI
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
 
-// Helper function to process base64 frame data from camera
-function processFrameData(frameData) {
-  if (!frameData || typeof frameData !== 'string') {
-    return null
-  }
-  
-  // Extract base64 data (remove data:image/jpeg;base64, prefix if present)
-  const base64Data = frameData.includes(',') ? frameData.split(',')[1] : frameData
-  
-  return {
-    inlineData: {
-      data: base64Data,
-      mimeType: 'image/jpeg'
+// Emergency analysis prompt in Hebrew
+const EMERGENCY_ANALYSIS_PROMPT = `
+אתה מערכת AI מתקדמת לזיהוי חירום עבור כוחות הביטחון בישראל. אתה רואה וידאו בזמן אמת מיחידת שטח.
+
+נתח כל מסגרת וחפש:
+🔥 שריפות, עשן (שחור/לבן), להבות
+👥 אנשים בסיכון, נפגעים, ילדים, מבוגרים
+🏠 נזק מבני, קירות שבורים, דלתות שבורות
+⚡ חוטי חשמל חשופים, סכנות חשמליות  
+💥 חומרים מסוכנים, בלוני גז, רכבים בוערים
+🚨 כל איום או סכנה אחרת
+
+תן תשובה מיידית בפורמט הזה:
+{
+  "urgent": true/false,
+  "detections": [
+    {
+      "type": "fire/smoke/person/structural_damage/electrical_hazard/explosion_risk",
+      "severity": "low/medium/high/critical", 
+      "confidence": 0.0-1.0,
+      "description": "תיאור בעברית",
+      "location": "מיקום באזור",
+      "action_required": "פעולה נדרשת"
     }
-  }
+  ],
+  "instructions": [
+    "הנחיה 1 לכוח בשטח",
+    "הנחיה 2 לכוח בשטח"
+  ],
+  "priority": "low/medium/high/critical"
 }
 
-// AI Analysis endpoint - now handles real camera frames
+רק אם זיהית משהו חשוב - השב. אם הכל רגיל - אל תשיב כלום.
+`
+
+// Live Analysis integration with existing Socket.IO
+function setupLiveAnalysis(io) {
+  console.log('🎥 Setting up Live Analysis with Socket.IO...')
+  
+  // Store active live sessions
+  const liveSessions = new Map()
+
+  io.on('connection', (socket) => {
+    // Handle live analysis start
+    socket.on('start_live_analysis', async (data) => {
+      const { unitId } = data
+      const sessionId = socket.id
+      
+      console.log(`🎥 Starting live analysis for unit ${unitId}, session ${sessionId}`)
+      
+      try {
+        if (!process.env.GEMINI_API_KEY) {
+          console.warn('⚠️ Gemini API key not found - Using mock live analysis')
+          setupMockLiveAnalysis(socket, sessionId, unitId)
+          return
+        }
+
+        // Initialize Gemini Live session
+        const liveSession = await genAI.live.connect({
+          model: 'gemini-2.5-flash',
+          config: {
+            responseModalities: [Modality.TEXT],
+            systemInstruction: EMERGENCY_ANALYSIS_PROMPT,
+            generationConfig: {
+              maxOutputTokens: 1024,
+              temperature: 0.1,
+            }
+          }
+        })
+
+        // Store session
+        liveSessions.set(sessionId, {
+          geminiSession: liveSession,
+          socket: socket,
+          unitId: unitId,
+          lastAnalysis: Date.now()
+        })
+
+        // Handle responses from Gemini Live API
+        liveSession.on('message', (response) => {
+          try {
+            if (response.serverContent?.modelTurn) {
+              const analysisText = response.serverContent.modelTurn.parts[0]?.text
+              if (analysisText && analysisText.trim()) {
+                console.log('🤖 Live AI Response:', analysisText.substring(0, 100) + '...')
+                
+                let analysis
+                try {
+                  const jsonMatch = analysisText.match(/\{[\s\S]*\}/)
+                  if (jsonMatch) {
+                    analysis = JSON.parse(jsonMatch[0])
+                    
+                    socket.emit('live_analysis_result', {
+                      sessionId,
+                      analysis: {
+                        ...analysis,
+                        timestamp: new Date().toISOString(),
+                        session_id: sessionId
+                      }
+                    })
+
+                    if (analysis.urgent) {
+                      console.log('🚨 URGENT detection found:', analysis.detections)
+                    }
+                  }
+                } catch (parseError) {
+                  console.warn('⚠️ Failed to parse live AI response')
+                }
+              }
+            }
+          } catch (error) {
+            console.error('🚨 Live response processing error:', error)
+          }
+        })
+
+        socket.emit('live_analysis_ready', { 
+          sessionId,
+          message: 'Live AI analysis activated'
+        })
+
+      } catch (error) {
+        console.error('🚨 Failed to create live session:', error)
+        setupMockLiveAnalysis(socket, sessionId, unitId)
+      }
+    })
+
+    // Handle video frames
+    socket.on('live_analysis_frame', async (data) => {
+      const { frameData } = data
+      const sessionId = socket.id
+      const session = liveSessions.get(sessionId)
+      
+      if (!session) return
+
+      // Rate limiting: max 2 frames per second
+      const now = Date.now()
+      if (now - session.lastAnalysis < 500) return
+      session.lastAnalysis = now
+
+      try {
+        await session.geminiSession.sendRealtimeInput({
+          video: {
+            data: frameData,
+            mimeType: 'image/jpeg'
+          }
+        })
+      } catch (error) {
+        console.error('🚨 Error sending frame to Gemini:', error)
+      }
+    })
+
+    // Handle stop live analysis
+    socket.on('stop_live_analysis', async () => {
+      const sessionId = socket.id
+      const session = liveSessions.get(sessionId)
+      
+      if (session?.geminiSession) {
+        try {
+          await session.geminiSession.disconnect()
+        } catch (error) {
+          console.error('Error disconnecting Gemini session:', error)
+        }
+      }
+      
+      liveSessions.delete(sessionId)
+      console.log(`🛑 Stopped live analysis for session ${sessionId}`)
+    })
+
+    // Cleanup on disconnect
+    socket.on('disconnect', async () => {
+      const sessionId = socket.id
+      const session = liveSessions.get(sessionId)
+      
+      if (session?.geminiSession) {
+        try {
+          await session.geminiSession.disconnect()
+        } catch (error) {
+          console.error('Error cleaning up Gemini session:', error)
+        }
+      }
+      
+      liveSessions.delete(sessionId)
+    })
+  })
+}
+
+// Mock live analysis for when Gemini is unavailable
+function setupMockLiveAnalysis(socket, sessionId, unitId) {
+  console.log(`🎭 Setting up mock live analysis for unit ${unitId}`)
+  
+  socket.emit('live_analysis_ready', { 
+    sessionId,
+    message: 'Mock AI analysis activated (Gemini unavailable)',
+    isMock: true
+  })
+  
+  // Mock analysis every 5 seconds
+  const mockInterval = setInterval(() => {
+    if (Math.random() > 0.7) { // 30% chance of detection
+      const mockDetections = [
+        {
+          type: 'fire',
+          severity: 'critical',
+          confidence: 0.85,
+          description: 'זוהתה שריפה פעילה',
+          location: 'חלק מרכזי של השטח',
+          action_required: 'פנה מהאזור מיידית'
+        },
+        {
+          type: 'smoke',
+          severity: 'high',
+          confidence: 0.78,
+          description: 'זוהה עשן כבד',
+          location: 'בחלק הצפוני',
+          action_required: 'הימנע משאיפה'
+        },
+        {
+          type: 'person',
+          severity: 'medium',
+          confidence: 0.92,
+          description: 'זוהו אנשים באזור',
+          location: 'ליד הכניסה',
+          action_required: 'בדוק מצב הנפגעים'
+        }
+      ]
+      
+      const detection = mockDetections[Math.floor(Math.random() * mockDetections.length)]
+      
+      socket.emit('live_analysis_result', {
+        sessionId,
+        analysis: {
+          urgent: detection.severity === 'critical',
+          detections: [detection],
+          instructions: [
+            'דווח למרכז השליטה',
+            detection.action_required,
+            'המתן להוראות נוספות'
+          ],
+          priority: detection.severity,
+          timestamp: new Date().toISOString(),
+          session_id: sessionId,
+          isMock: true
+        }
+      })
+    }
+  }, 5000)
+  
+  socket.on('disconnect', () => {
+    clearInterval(mockInterval)
+  })
+}
+
+// Legacy analyze-frame endpoint (still available for manual analysis)
 router.post('/analyze-frame', async (req, res) => {
   try {
     const { unitId, frame } = req.body
@@ -33,12 +268,10 @@ router.post('/analyze-frame', async (req, res) => {
       })
     }
 
-    console.log(`📸 Analyzing frame for unit ${unitId}`)
-    console.log(`📊 Frame data: ${frame ? (frame.length > 50 ? 'Real camera data' : 'Mock data') : 'No data'}`)
+    console.log(`📸 Manual frame analysis for unit ${unitId}`)
 
-    // Check if we have real frame data from camera
+    // Check if we have real frame data
     if (frame && frame !== 'mock_frame_data' && frame.startsWith('data:image')) {
-      // Real frame analysis with Gemini Vision
       if (!process.env.GEMINI_API_KEY) {
         console.warn('⚠️ Gemini API key not found, using mock analysis')
         return performMockAnalysis(unitId, res)
@@ -52,26 +285,13 @@ router.post('/analyze-frame', async (req, res) => {
 
         const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
         
-        const emergencyPrompt = `
-        אתה מערכת AI לזיהוי חירום לכוחות הביטחון. נתח את התמונה ובדוק:
-        1. שריפות או עשן
-        2. אנשים בסיכון
-        3. נזק מבני
-        4. חומרים מסוכנים
+        const result = await model.generateContent([
+          EMERGENCY_ANALYSIS_PROMPT,
+          frameImage
+        ])
         
-        השב בפורמט JSON:
-        {
-          "detections": [{"type": "fire/smoke/person/structural_damage", "confidence": 0.85, "description": "תיאור", "severity": "low/medium/high/critical"}],
-          "summary": "סיכום קצר בעברית", 
-          "recommendations": ["המלצה 1", "המלצה 2"]
-        }
-        `
-
-        const result = await model.generateContent([emergencyPrompt, frameImage])
         const response = await result.response
         const analysisText = response.text()
-        
-        console.log('🤖 Gemini AI response received')
         
         // Try to parse JSON response
         let analysis
@@ -83,11 +303,11 @@ router.post('/analyze-frame', async (req, res) => {
             throw new Error('No JSON found in response')
           }
         } catch (parseError) {
-          console.warn('⚠️ Failed to parse AI response, using summary')
           analysis = {
+            urgent: false,
             detections: [],
-            summary: analysisText.substring(0, 150) + '...',
-            recommendations: ['בדוק ידנית', 'דווח למרכז השליטה']
+            instructions: ['בדוק ידנית', 'דווח למרכז השליטה'],
+            priority: 'low'
           }
         }
 
@@ -104,12 +324,9 @@ router.post('/analyze-frame', async (req, res) => {
 
       } catch (aiError) {
         console.error('🚨 Gemini AI failed:', aiError.message)
-        console.log('🔄 Falling back to mock analysis')
         return performMockAnalysis(unitId, res)
       }
     } else {
-      // Mock analysis for testing
-      console.log('🎭 Using mock analysis')
       return performMockAnalysis(unitId, res)
     }
 
@@ -122,49 +339,64 @@ router.post('/analyze-frame', async (req, res) => {
   }
 })
 
-// Mock analysis helper function
+// Helper function to process base64 frame data
+function processFrameData(frameData) {
+  if (!frameData || typeof frameData !== 'string') {
+    return null
+  }
+  
+  const base64Data = frameData.includes(',') ? frameData.split(',')[1] : frameData
+  
+  return {
+    inlineData: {
+      data: base64Data,
+      mimeType: 'image/jpeg'
+    }
+  }
+}
+
+// Mock analysis helper (unchanged)
 function performMockAnalysis(unitId, res) {
-  // Simulate AI processing time
   setTimeout(() => {
     const scenarios = [
       {
         type: 'fire',
         confidence: 0.85,
         severity: 'critical',
-        description: 'זוהתה שריפה פעילה באזור'
+        description: 'זוהתה שריפה פעילה באזור',
+        location: 'חלק מרכזי',
+        action_required: 'פנה מהאזור מיידית'
       },
       {
         type: 'smoke',
         confidence: 0.78,
         severity: 'high', 
-        description: 'זוהה עשן כבד'
+        description: 'זוהה עשן כבד',
+        location: 'חלק צפוני',
+        action_required: 'הימנע משאיפה'
       },
       {
         type: 'person',
         confidence: 0.92,
         severity: 'medium',
-        description: 'זוהו אנשים באזור'
-      },
-      {
-        type: 'structural_damage',
-        confidence: 0.67,
-        severity: 'high',
-        description: 'זוהה נזק מבני'
+        description: 'זוהו אנשים באזור',
+        location: 'ליד הכניסה',
+        action_required: 'בדוק מצב הנפגעים'
       }
     ]
 
-    // 40% chance for detection
     const shouldDetect = Math.random() > 0.6
     const selectedScenario = scenarios[Math.floor(Math.random() * scenarios.length)]
 
     const analysis = {
+      urgent: shouldDetect && selectedScenario.severity === 'critical',
       detections: shouldDetect ? [selectedScenario] : [],
-      summary: shouldDetect ? `AI זיהה: ${selectedScenario.description}` : 'לא זוהו איומים באזור',
-      recommendations: shouldDetect ? [
+      instructions: shouldDetect ? [
         'דווח למרכז השליטה',
-        'שמור על מרחק בטוח', 
+        selectedScenario.action_required,
         'המתן להוראות נוספות'
       ] : ['המשך בסיור רגיל'],
+      priority: shouldDetect ? selectedScenario.severity : 'low',
       timestamp: new Date().toISOString(),
       processing_time: '1.2s',
       ai_model: 'mock_system'
@@ -178,70 +410,7 @@ function performMockAnalysis(unitId, res) {
   }, 1000)
 }
 
-// AI Chat endpoint for instructions
-router.post('/chat', async (req, res) => {
-  try {
-    const { message, unitId, context } = req.body
-
-    if (!message || !unitId) {
-      return res.status(400).json({
-        error: 'Missing required fields',
-        required: ['message', 'unitId']
-      })
-    }
-
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
-
-    const chatPrompt = `
-      אתה מערכת AI מתקדמת לסיוע לכוחות חירום. 
-      יחידה ${unitId} שואלת: "${message}"
-      
-      ${context ? `הקשר נוסף: ${context}` : ''}
-      
-      תן תשובה קצרה, מדויקת ומעשית בעברית.
-      התמקד בהוראות בטיחות ופעולות מיידיות נדרשות.
-    `
-
-    const result = await model.generateContent(chatPrompt)
-    const response = await result.response
-    const reply = response.text()
-
-    res.json({
-      success: true,
-      unitId,
-      message,
-      reply,
-      timestamp: new Date().toISOString()
-    })
-
-  } catch (error) {
-    console.error('AI Chat error:', error)
-    res.status(500).json({
-      error: 'AI chat failed',
-      message: error.message
-    })
-  }
-})
-
-// Health check for AI service
-router.get('/health', async (req, res) => {
-  try {
-    if (!process.env.GEMINI_API_KEY) {
-      throw new Error('Gemini API key not configured')
-    }
-
-    res.json({
-      status: 'healthy',
-      ai_service: 'Gemini Pro',
-      timestamp: new Date().toISOString(),
-      capabilities: ['image_analysis', 'chat', 'emergency_detection']
-    })
-  } catch (error) {
-    res.status(500).json({
-      status: 'unhealthy',
-      error: error.message
-    })
-  }
-})
-
-module.exports = router 
+module.exports = {
+  router,
+  setupLiveAnalysis
+} 

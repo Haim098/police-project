@@ -10,6 +10,8 @@ interface CameraHookReturn {
   startRecording: () => void
   stopRecording: () => void
   captureFrame: () => string | null
+  startAutoCapture: (onFrame: (frameData: string) => void, intervalMs?: number) => void
+  stopAutoCapture: () => void
   error: string | null
 }
 
@@ -17,6 +19,7 @@ export function useCamera(): CameraHookReturn {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const autoCaptureIntervalRef = useRef<NodeJS.Timeout | null>(null)
   
   const [isPermissionGranted, setIsPermissionGranted] = useState(false)
   const [isCameraOn, setIsCameraOn] = useState(false)
@@ -44,6 +47,7 @@ export function useCamera(): CameraHookReturn {
   const startCamera = useCallback(async () => {
     try {
       setError(null)
+      console.log('🎥 Starting camera...')
       
       const constraints = {
         video: {
@@ -57,10 +61,48 @@ export function useCamera(): CameraHookReturn {
 
       const stream = await navigator.mediaDevices.getUserMedia(constraints)
       streamRef.current = stream
+      console.log('🎥 Stream obtained:', stream)
+      console.log('🎥 Video tracks:', stream.getVideoTracks().map(t => `${t.label} (${t.getSettings().width}x${t.getSettings().height})`))
       
       if (videoRef.current) {
+        console.log('🎥 Setting video srcObject...')
         videoRef.current.srcObject = stream
+        
+        // Wait for video to be ready
+        await new Promise<void>((resolve, reject) => {
+          const video = videoRef.current
+          if (!video) {
+            reject(new Error('Video ref became null'))
+            return
+          }
+          
+          const onLoadedMetadata = () => {
+            console.log('🎥 Video metadata loaded')
+            console.log(`🎥 Video dimensions: ${video.videoWidth}x${video.videoHeight}`)
+            video.removeEventListener('loadedmetadata', onLoadedMetadata)
+            resolve()
+          }
+          
+          const onError = (e: Event) => {
+            console.error('🎥 Video error:', e)
+            video.removeEventListener('error', onError)
+            reject(new Error('Video loading failed'))
+          }
+          
+          video.addEventListener('loadedmetadata', onLoadedMetadata)
+          video.addEventListener('error', onError)
+          
+          // If metadata is already loaded
+          if (video.readyState >= 1) {
+            onLoadedMetadata()
+          }
+        })
+        
         await videoRef.current.play()
+        console.log('🎥 Video playing')
+      } else {
+        console.error('🎥 Video ref is null')
+        throw new Error('Video element not found')
       }
       
       setIsCameraOn(true)
@@ -149,15 +191,26 @@ export function useCamera(): CameraHookReturn {
   const captureFrame = useCallback((): string | null => {
     if (!videoRef.current || !isCameraOn) {
       setError('מצלמה לא פעילה')
+      console.error('📸 Camera not active or video ref missing')
+      return null
+    }
+
+    const video = videoRef.current
+    
+    // Check if video has loaded and has dimensions
+    if (video.videoWidth === 0 || video.videoHeight === 0) {
+      setError('וידאו לא מוכן עדיין')
+      console.error('📸 Video not ready - no dimensions')
       return null
     }
 
     try {
       const canvas = document.createElement('canvas')
-      const video = videoRef.current
       
       canvas.width = video.videoWidth
       canvas.height = video.videoHeight
+      
+      console.log(`📸 Capturing frame: ${canvas.width}x${canvas.height}`)
       
       const ctx = canvas.getContext('2d')
       if (!ctx) {
@@ -169,6 +222,12 @@ export function useCamera(): CameraHookReturn {
       const frameData = canvas.toDataURL('image/jpeg', 0.8)
       
       console.log('📸 Frame captured:', frameData.length, 'characters')
+      
+      // Verify we have actual image data (not just empty canvas)
+      if (frameData.length < 1000) {
+        console.warn('📸 Frame seems empty, might be black')
+      }
+      
       return frameData
       
     } catch (err) {
@@ -185,6 +244,37 @@ export function useCamera(): CameraHookReturn {
     }
   }, [stopCamera])
 
+  const startAutoCapture = useCallback((onFrame: (frameData: string) => void, intervalMs: number = 2000) => {
+    if (autoCaptureIntervalRef.current) {
+      clearInterval(autoCaptureIntervalRef.current)
+    }
+
+    console.log(`📸 Starting auto-capture every ${intervalMs}ms`)
+    autoCaptureIntervalRef.current = setInterval(() => {
+      if (isCameraOn) {
+        const frameData = captureFrame()
+        if (frameData) {
+          onFrame(frameData)
+        }
+      }
+    }, intervalMs)
+  }, [isCameraOn, captureFrame])
+
+  const stopAutoCapture = useCallback(() => {
+    if (autoCaptureIntervalRef.current) {
+      console.log('📸 Stopping auto-capture')
+      clearInterval(autoCaptureIntervalRef.current)
+      autoCaptureIntervalRef.current = null
+    }
+  }, [])
+
+  // Cleanup auto-capture on unmount
+  useEffect(() => {
+    return () => {
+      stopAutoCapture()
+    }
+  }, [stopAutoCapture])
+
   return {
     videoRef,
     isPermissionGranted,
@@ -195,6 +285,8 @@ export function useCamera(): CameraHookReturn {
     startRecording,
     stopRecording,
     captureFrame,
+    startAutoCapture,
+    stopAutoCapture,
     error
   }
 } 

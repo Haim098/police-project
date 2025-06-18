@@ -1,12 +1,12 @@
 const express = require('express')
-const { createServer } = require('http')
-const { Server } = require('socket.io')
+const http = require('http')
+const socketIo = require('socket.io')
 const cors = require('cors')
 const helmet = require('helmet')
 require('dotenv').config()
 
 const app = express()
-const server = createServer(app)
+const server = http.createServer(app)
 
 // Security middleware
 app.use(helmet({
@@ -29,33 +29,42 @@ app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
 // Socket.IO setup
-const io = new Server(server, {
-  cors: corsOptions,
-  pingTimeout: 60000,
-  pingInterval: 25000
+const io = socketIo(server, {
+  cors: {
+    origin: ["http://localhost:3000", "http://localhost:3002"],
+    methods: ["GET", "POST"],
+    credentials: true
+  },
+  transports: ['websocket', 'polling']
 })
 
 // Import route handlers
-const aiRoutes = require('./routes/ai')
+const { router: aiRouter, setupLiveAnalysis } = require('./routes/ai')
 const unitRoutes = require('./routes/units')
-const { initializeSocket } = require('./services/socketService')
+const { initializeSocketService } = require('./services/socketService')
 
 // Routes
-app.use('/api/ai', aiRoutes)
+app.use('/api/ai', aiRouter)
 app.use('/api/units', unitRoutes)
 
 // Health check
 app.get('/health', (req, res) => {
-  res.json({
-    status: 'healthy',
+  res.json({ 
+    status: 'healthy', 
     timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    version: '1.0.0'
+    server: 'RescuerLens',
+    services: ['websocket', 'ai', 'live_analysis']
   })
 })
 
-// Initialize WebSocket handlers
-initializeSocket(io)
+// Initialize Live Analysis WebSocket integration
+console.log('🎥 Live Analysis WebSocket server initialized')
+setupLiveAnalysis(io)
+
+// Initialize Socket.IO service
+console.log('🔌 Initializing WebSocket service...')
+initializeSocketService(io)
+console.log('✅ WebSocket service initialized')
 
 // Error handling
 app.use((err, req, res, next) => {
@@ -78,9 +87,9 @@ const PORT = process.env.PORT || 3001
 
 server.listen(PORT, () => {
   console.log(`🚀 RescuerLens Server running on port ${PORT}`)
-  console.log(`📡 WebSocket server ready`)
-  console.log(`🤖 AI Proxy initialized`)
-  console.log(`🔥 Emergency response system active`)
+  console.log('📡 WebSocket server ready')
+  console.log('🤖 AI Proxy initialized')
+  console.log('🔥 Emergency response system active')
 })
 
 // Graceful shutdown

@@ -63,21 +63,22 @@ class WebSocketService {
   registerUnit(unitId: string) {
     if (!this.socket) {
       console.error('WebSocket not connected')
-      return
+      return Promise.reject(new Error('WebSocket not connected'))
     }
 
     console.log(`📡 Registering unit: ${unitId}`)
     this.socket.emit('register_unit', { unitId })
     
     return new Promise((resolve, reject) => {
-      this.socket?.on('registered', (data) => {
+      const timeout = setTimeout(() => {
+        reject(new Error('Registration timeout'))
+      }, 5000)
+
+      this.socket?.once('registered', (data) => {
+        clearTimeout(timeout)
         console.log('Unit registered successfully:', data)
         resolve(data)
       })
-
-      setTimeout(() => {
-        reject(new Error('Registration timeout'))
-      }, 5000)
     })
   }
 
