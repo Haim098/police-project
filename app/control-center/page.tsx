@@ -29,6 +29,7 @@ import { Switch } from "@/components/ui/switch"
 import { supabase, Unit, Detection } from "@/lib/supabase"
 import websocketService from "@/lib/websocket"
 import { Badge } from "@/components/ui/badge"
+import MapView from '@/components/map-view'
 
 export default function ControlCenter() {
   const [activeUnits, setActiveUnits] = useState<Unit[]>([])
@@ -38,6 +39,7 @@ export default function ControlCenter() {
   const [soundAlerts, setSoundAlerts] = useState(true)
   const [message, setMessage] = useState("")
   const [wsConnected, setWsConnected] = useState(false)
+  const [selectedMapTab, setSelectedMapTab] = useState<string>('all')
 
   // Load units from Supabase and setup WebSocket
   useEffect(() => {
@@ -45,25 +47,63 @@ export default function ControlCenter() {
     loadDetections()
     setupWebSocket()
     
+    // Clean up inactive units every 2 minutes
+    const cleanupInterval = setInterval(cleanupInactiveUnits, 2 * 60 * 1000)
+    
+    // Initial cleanup after 10 seconds
+    const initialCleanup = setTimeout(cleanupInactiveUnits, 10000)
+    
     // Subscribe to real-time updates
     const unitsSubscription = supabase
       .channel('units')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'units' }, () => {
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'units' }, (payload) => {
+        console.log('🔄 Units table change detected:', payload)
         loadUnits()
       })
       .subscribe()
 
     const detectionsSubscription = supabase
       .channel('detections')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'detections' }, () => {
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'detections' }, (payload) => {
+        console.log('🔍 Detections table change detected:', payload)
         loadDetections()
+        
+        // Play alert sound for new critical detections
+        if (payload.eventType === 'INSERT' && payload.new?.severity === 'critical' && soundAlerts) {
+          playAlertSound()
+        }
+      })
+      .subscribe()
+
+    const eventsSubscription = supabase
+      .channel('events')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'events' }, (payload) => {
+        console.log('📨 New event detected:', payload)
+        
+        // Handle messages from field units
+        if (payload.new?.type === 'message_to_control') {
+          const eventData = payload.new.data as any
+          alert(`הודעה מיחידה ${eventData?.unit_name || 'לא ידוע'}: ${eventData?.message}`)
+        }
+        
+        // Handle emergency alerts
+        if (payload.new?.type === 'emergency_alert') {
+          const eventData = payload.new.data as any
+          alert(`🚨 התראת חירום: ${eventData?.message}`)
+          if (soundAlerts) {
+            playAlertSound()
+          }
+        }
       })
       .subscribe()
 
     return () => {
       unitsSubscription.unsubscribe()
       detectionsSubscription.unsubscribe()
+      eventsSubscription.unsubscribe()
       websocketService.disconnect()
+      clearInterval(cleanupInterval)
+      clearTimeout(initialCleanup)
     }
   }, [])
 
@@ -92,11 +132,65 @@ export default function ControlCenter() {
 
       // Listen for urgent alerts
       websocketService.onMessage('urgent_alert', (data) => {
-        console.log('Urgent alert:', data)
+        console.log('🚨 Urgent alert received:', data)
         alert(`התראה דחופה: ${data.message}`)
         if (soundAlerts) {
           playAlertSound()
         }
+        
+        // Reload detections to show the new urgent detection
+        loadDetections()
+      })
+
+      // Listen for location updates from units
+      websocketService.onMessage('location_update', (data) => {
+        console.log('📍 Location update received:', data)
+        // Update unit location in real-time
+        setActiveUnits(prev => prev.map(unit => 
+          unit.id === data.unitId 
+            ? { ...unit, lat: data.lat, lng: data.lng, last_update: data.timestamp }
+            : unit
+        ))
+      })
+
+      // Listen for live detection alerts from AI analysis
+      websocketService.onMessage('live_detection_alert', (data) => {
+        console.log('🤖 Live detection alert received:', data)
+        
+        // Show notification for significant live detections
+        if (data.detection && (data.detection.severity === 'critical' || data.detection.severity === 'high')) {
+          alert(`זיהוי חי: ${data.detection.description}`)
+          if (soundAlerts) {
+            playAlertSound()
+          }
+        }
+        
+        // Reload detections to show any new ones that might have been saved
+        loadDetections()
+      })
+
+      // Listen for detection creation notifications
+      websocketService.onMessage('detection_created', (data) => {
+        console.log('📡 Detection created notification received:', data)
+        
+        // Reload detections to show the new detection
+        loadDetections()
+        
+        // Show alert for critical detections
+        if (data.severity === 'critical' && soundAlerts) {
+          playAlertSound()
+        }
+      })
+
+      // Listen for messages from field units
+      websocketService.onMessage('unit_message_received', (data) => {
+        console.log('📨 Message received from unit:', data)
+        
+        // Show notification
+        alert(`הודעה מיחידה ${data.unitName}: ${data.message}`)
+        
+        // Reload units and events to show new messages
+        loadUnits()
       })
 
     } catch (error) {
@@ -127,14 +221,60 @@ export default function ControlCenter() {
       const { data, error } = await supabase
         .from('units')
         .select('*')
-        .order('created_at', { ascending: false })
+        .eq('status', 'active')  // Only load active units
+        .order('last_update', { ascending: false })
 
       if (error) throw error
-      setActiveUnits(data || [])
+      
+      // Convert lat/lng to numbers if they come as strings
+      const processedUnits = (data || []).map(unit => ({
+        ...unit,
+        lat: typeof unit.lat === 'string' ? parseFloat(unit.lat) : unit.lat,
+        lng: typeof unit.lng === 'string' ? parseFloat(unit.lng) : unit.lng
+      }))
+      
+      setActiveUnits(processedUnits)
+      console.log(`📊 Loaded ${processedUnits.length} active units`)
+      console.log('📍 Units with locations:', processedUnits.filter(u => u.lat && u.lng).map(u => ({
+        name: u.name,
+        lat: u.lat,
+        lng: u.lng,
+        latType: typeof u.lat,
+        lngType: typeof u.lng
+      })))
     } catch (error) {
       console.error('Error loading units:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const cleanupInactiveUnits = async () => {
+    try {
+      // Mark units as inactive if they haven't been updated in the last 5 minutes
+      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString()
+      
+      const { data, error } = await supabase
+        .from('units')
+        .update({ status: 'inactive' })
+        .eq('status', 'active')
+        .lt('last_update', fiveMinutesAgo)
+        .select()
+
+      if (error) throw error
+      
+      if (data && data.length > 0) {
+        console.log(`🧹 Marked ${data.length} inactive units:`, data.map(u => u.name))
+        alert(`נוקו ${data.length} יחידות לא פעילות`)
+        // Reload units after cleanup
+        loadUnits()
+      } else {
+        console.log('🧹 No inactive units found to clean up')
+        alert('אין יחידות לא פעילות לניקוי')
+      }
+    } catch (error) {
+      console.error('Error cleaning up inactive units:', error)
+      alert('שגיאה בניקוי יחידות לא פעילות')
     }
   }
 
@@ -259,6 +399,7 @@ export default function ControlCenter() {
       // Send via WebSocket for real-time delivery
       if (wsConnected) {
         for (const unitId of targetUnits) {
+          console.log(`📤 Sending command to unit ${unitId}:`, message)
           websocketService.sendMessage('send_command', {
             unitId,
             command: 'message',
@@ -283,7 +424,7 @@ export default function ControlCenter() {
       }
       
       setMessage("")
-      alert(`הודעה נשלחה ל-${targetUnits.length} יחידות ${wsConnected ? '(בזמן אמת)' : '(לא מחובר לשרת)'}`)
+      alert(`הודעה נשלחה ל-${targetUnits.length} יחידות ${wsConnected ? '(בזמן אמת)' : '(נשמר במסד הנתונים)'}`)
     } catch (error) {
       console.error('Error sending message:', error)
       alert('שגיאה בשליחת ההודעה')
@@ -340,6 +481,14 @@ export default function ControlCenter() {
                   {wsConnected ? 'מחובר לשרת' : 'לא מחובר'}
                 </span>
               </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={cleanupInactiveUnits}
+                className="text-xs"
+              >
+                🧹 נקה יחידות
+              </Button>
             </div>
           </div>
         </div>
@@ -348,41 +497,90 @@ export default function ControlCenter() {
         <div className="grid lg:grid-cols-4 gap-6">
           {/* Map View */}
           <div className="lg:col-span-2">
-            <Card className="h-[600px]">
-              <CardHeader className="pb-3">
+            <Card className="h-[600px] flex flex-col">
+              <CardHeader className="pb-3 flex-shrink-0">
                 <CardTitle className="flex items-center gap-2">
                   <MapPin className="w-5 h-5" />
                   מפת יחידות
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-0">
-                <div className="bg-gray-100 h-full rounded-b-lg relative overflow-hidden">
-                  {/* Placeholder for MapBox component */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center text-gray-500">
-                      <MapPin className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                      <p className="text-lg font-medium">מפה תעלה בקרוב</p>
-                      <p className="text-sm">יוצג כאן מיקום יחידות בזמן אמת</p>
+              <CardContent className="flex-1 p-0 flex flex-col min-h-0">
+                {activeUnits.length > 0 ? (
+                  <div className="flex flex-col h-full">
+                    {/* Tabs Header */}
+                    <div className="px-4 pt-4 pb-3 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 flex-shrink-0">
+                      <div className="flex gap-2 flex-wrap">
+                        <button
+                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 ${
+                            selectedMapTab === 'all' 
+                              ? 'bg-blue-600 text-white shadow-lg ring-2 ring-blue-300' 
+                              : 'bg-white text-gray-700 border border-gray-300 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-700 shadow-sm'
+                          }`}
+                          onClick={() => setSelectedMapTab('all')}
+                        >
+                          <span className="flex items-center gap-2">
+                            🗺️ כל היחידות ({activeUnits.length})
+                            {selectedMapTab === 'all' && (
+                              <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                            )}
+                          </span>
+                        </button>
+                        {activeUnits.map((unit) => (
+                          <button
+                            key={unit.id}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 ${
+                              selectedMapTab === unit.id 
+                                ? 'bg-blue-600 text-white shadow-lg ring-2 ring-blue-300' 
+                                : 'bg-white text-gray-700 border border-gray-300 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-700 shadow-sm'
+                            }`}
+                            onClick={() => setSelectedMapTab(unit.id)}
+                          >
+                            <span className="flex items-center gap-2">
+                              {unit.type === 'police' && '👮'}
+                              {unit.type === 'fire' && '🚒'}
+                              {unit.type === 'medical' && '🚑'}
+                              {unit.type === 'civil_defense' && '🛡️'}
+                              {unit.name}
+                            </span>
+                          </button>
+                        ))}
                     </div>
                   </div>
                   
-                  {/* Unit markers overlay */}
-                  {activeUnits.map((unit, index) => (
-                    <div
-                      key={unit.id}
-                      className="absolute bg-white rounded-full p-2 shadow-lg border-2 cursor-pointer hover:scale-110 transition-transform"
-                      style={{
-                        left: `${20 + index * 15}%`,
-                        top: `${30 + index * 10}%`,
-                        borderColor: unit.status === 'active' ? '#10b981' : '#6b7280'
-                      }}
-                    >
-                      <div className="flex items-center justify-center">
-                        {getUnitTypeIcon(unit.type)}
+                    {/* Map Content */}
+                    <div className="flex-1 min-h-0 relative">
+                      {/* Selected Tab Indicator */}
+                      <div className="absolute top-2 left-2 z-10 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-lg shadow-md border">
+                        <span className="text-xs font-medium text-gray-700">
+                          {selectedMapTab === 'all' 
+                            ? `מציג כל היחידות (${activeUnits.length})` 
+                            : `מציג יחידה: ${activeUnits.find(u => u.id === selectedMapTab)?.name}`
+                          }
+                        </span>
                       </div>
+                      
+                      <MapView 
+                        units={selectedMapTab === 'all' ? activeUnits : activeUnits.filter(u => u.id === selectedMapTab)} 
+                        selectedUnitId={selectedUnits[0]}
+                        onUnitClick={(unitId) => {
+                          setSelectedUnits(prev => 
+                            prev.includes(unitId) 
+                              ? prev.filter(id => id !== unitId)
+                              : [...prev, unitId]
+                          )
+                        }}
+                        height="100%"
+                      />
                     </div>
-                  ))}
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center h-full text-gray-400">
+                    <div className="text-center">
+                      <MapPin className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                      <p>אין יחידות פעילות כרגע</p>
+                    </div>
                 </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -516,10 +714,28 @@ export default function ControlCenter() {
                 </CardTitle>
               </CardHeader>
             <CardContent className="space-y-3">
-              <Button className="w-full" variant="outline">
+              <Button 
+                className="w-full" 
+                variant="outline"
+                onClick={() => {
+                  if (selectedUnits.length === 0) {
+                    alert('אנא בחר יחידות לצפייה בזרמי הוידאו שלהן')
+                    return
+                  }
+                  // TODO: Implement multi-stream viewer
+                  alert(`פתיחת צפייה ב-${selectedUnits.length} זרמי וידאו...\nפיצ׳ר זה בפיתוח`)
+                }}
+              >
                 צפה בכל הזרמים
               </Button>
-              <Button className="w-full" variant="outline">
+              <Button 
+                className="w-full" 
+                variant="outline"
+                onClick={() => {
+                  // TODO: Implement screen recording
+                  alert('הקלטת מסך מרכז השליטה...\nפיצ׳ר זה בפיתוח')
+                }}
+              >
                 הקלט מסך מרכז
               </Button>
               <div className="text-sm text-gray-600 text-center">

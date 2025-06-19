@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Maps Test</title>
+    <meta charset="utf-8">
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            direction: rtl;
+        }
+        .info {
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>בדיקת Google Maps API</h1>
+    
+    <div class="info">
+        <h3>מיקום יחידה 4837:</h3>
+        <p>קואורדינטות: 32.08530000, 34.78180000</p>
+        <p>מיקום: תל אביב-יפו, ישראל</p>
+    </div>
+    
+    <div id="map"></div>
+
+    <script>
+        function initMap() {
+            // מיקום יחידה 4837
+            const unit4837 = { lat: 32.08530000, lng: 34.78180000 };
+            
+            // יצירת המפה
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 15,
+                center: unit4837,
+                mapTypeId: 'roadmap'
+            });
+            
+            // יצירת סמן ליחידה
+            const marker = new google.maps.Marker({
+                position: unit4837,
+                map: map,
+                title: 'יחידה 4837',
+                icon: 'https://maps.google.com/mapfiles/ms/icons/green-dot.png'
+            });
+            
+            // יצירת חלון מידע
+            const infoWindow = new google.maps.InfoWindow({
+                content: `
+                    <div style="direction: rtl; text-align: right;">
+                        <h3>יחידה 4837</h3>
+                        <p>סטטוס: פעיל</p>
+                        <p>סוג: משטרה</p>
+                        <p>קואורדינטות: ${unit4837.lat}, ${unit4837.lng}</p>
+                    </div>
+                `
+            });
+            
+            marker.addListener("click", () => {
+                infoWindow.open(map, marker);
+            });
+            
+            console.log('✅ Google Maps loaded successfully');
+            console.log('📍 Unit 4837 marker added at:', unit4837);
+        }
+        
+        function mapError() {
+            console.error('❌ Google Maps failed to load');
+            document.getElementById('map').innerHTML = 
+                '<div style="color: red; padding: 20px; text-align: center;">' +
+                '❌ שגיאה בטעינת Google Maps<br/>' +
+                'בדוק את מפתח ה-API או את החיבור לאינטרנט' +
+                '</div>';
+        }
+    </script>
+    
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCJwN2BDqYl5zBkCpUYs3-LWC7vuA2sHVM&callback=initMap&language=he"
+            onerror="mapError()">
+    </script>
+</body>
+</html> 

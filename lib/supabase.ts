@@ -1,7 +1,12 @@
 import { createClient } from '@supabase/supabase-js'
+const config = require('../config.js')
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabaseUrl = config.supabase.url;
+const supabaseAnonKey = config.supabase.anonKey;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error("Supabase credentials are not loaded from config.js! Check the file and path.");
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 

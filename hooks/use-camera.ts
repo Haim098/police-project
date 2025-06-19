@@ -36,20 +36,20 @@ export function useCamera(): CameraHookReturn {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const checkCameraPermissions = async () => {
-      try {
+  const checkCameraPermissions = async () => {
+    try {
         if (navigator.permissions && 'query' in navigator.permissions) {
-          const permission = await navigator.permissions.query({ name: 'camera' as PermissionName })
-          setIsPermissionGranted(permission.state === 'granted')
-          
+      const permission = await navigator.permissions.query({ name: 'camera' as PermissionName })
+      setIsPermissionGranted(permission.state === 'granted')
+      
           permission.onchange = () => {
-            setIsPermissionGranted(permission.state === 'granted')
+        setIsPermissionGranted(permission.state === 'granted')
           }
         }
-      } catch (err) {
-        console.warn('Permission API not supported, will request on camera access')
-      }
+    } catch (err) {
+      console.warn('Permission API not supported, will request on camera access')
     }
+  }
     checkCameraPermissions()
   }, [])
 
@@ -86,7 +86,7 @@ export function useCamera(): CameraHookReturn {
     try {
       setError(null)
       console.log(`🎥 Starting ${type} stream...`)
-
+      
       let stream: MediaStream;
       if (type === 'camera') {
         stream = await navigator.mediaDevices.getUserMedia({
@@ -96,10 +96,10 @@ export function useCamera(): CameraHookReturn {
       } else {
         stream = await navigator.mediaDevices.getDisplayMedia({
           video: { width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 15 } },
-          audio: true
+        audio: true
         })
       }
-      
+
       streamRef.current = stream
       console.log(`🎥 Stream obtained for ${type}:`, stream)
       
@@ -109,7 +109,7 @@ export function useCamera(): CameraHookReturn {
           console.log(`🎥 ${type} stream ended by user.`)
           stopStream()
         }
-
+        
         await new Promise<void>((resolve, reject) => {
           const video = videoRef.current
           if (!video) return reject(new Error('Video ref became null'))
@@ -131,8 +131,8 @@ export function useCamera(): CameraHookReturn {
       }
       
       if (type === 'camera') {
-        setIsCameraOn(true)
-        setIsPermissionGranted(true)
+      setIsCameraOn(true)
+      setIsPermissionGranted(true)
       } else {
         setIsScreenSharing(true)
       }
@@ -161,7 +161,7 @@ export function useCamera(): CameraHookReturn {
   const startScreenShare = useCallback(async () => {
     await startStream('screen')
   }, [startStream])
-  
+
   const stopCamera = useCallback(() => {
     if (activeStreamType === 'camera') {
       stopStream()
@@ -230,9 +230,9 @@ export function useCamera(): CameraHookReturn {
       clearInterval(autoCaptureIntervalRef.current)
     }
     autoCaptureIntervalRef.current = setInterval(() => {
-      const frameData = captureFrame()
-      if (frameData) {
-        onFrame(frameData)
+        const frameData = captureFrame()
+        if (frameData) {
+          onFrame(frameData)
       }
     }, intervalMs)
     console.log(`📸 Starting auto-capture every ${intervalMs}ms`)

@@ -1,35 +1,50 @@
 const express = require('express')
 const { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } = require('@google/generative-ai')
 const router = express.Router()
+const config = require('../../config.js');
 
-// Initialize Gemini AI
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
-const model = genAI.getGenerativeModel({ 
-  model: 'gemini-1.5-flash',
-  generationConfig: {
-    maxOutputTokens: 2048,
-    temperature: 0.2,
-  },
-  // Disable safety settings for this specific use case
-  safetySettings: [
-    {
-      category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-      threshold: HarmBlockThreshold.BLOCK_NONE,
-    },
-    {
-      category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-      threshold: HarmBlockThreshold.BLOCK_NONE,
-    },
-    {
-      category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-      threshold: HarmBlockThreshold.BLOCK_NONE,
-    },
-    {
-      category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-      threshold: HarmBlockThreshold.BLOCK_NONE,
-    },
-  ],
-})
+// Initialize AI lazily to ensure environment variables are loaded
+let genAI;
+let model;
+
+function getAiModel() {
+  if (!model) {
+    const geminiApiKey = config.gemini.apiKey;
+    if (!geminiApiKey) {
+      console.error("CRITICAL: GEMINI_API_KEY is not set in config.js. AI features will not work.");
+      return null;
+    }
+    
+    genAI = new GoogleGenerativeAI(geminiApiKey);
+    model = genAI.getGenerativeModel({ 
+      model: 'gemini-1.5-flash',
+      generationConfig: {
+        maxOutputTokens: 2048,
+        temperature: 0.2,
+      },
+      // Disable safety settings for this specific use case
+      safetySettings: [
+        {
+          category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+          threshold: HarmBlockThreshold.BLOCK_NONE,
+        },
+        {
+          category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+          threshold: HarmBlockThreshold.BLOCK_NONE,
+        },
+        {
+          category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+          threshold: HarmBlockThreshold.BLOCK_NONE,
+        },
+        {
+          category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+          threshold: HarmBlockThreshold.BLOCK_NONE,
+        },
+      ],
+    });
+  }
+  return model;
+}
 
 // Emergency analysis prompt in Hebrew
 const EMERGENCY_ANALYSIS_PROMPT = `
@@ -71,6 +86,11 @@ const EMERGENCY_ANALYSIS_PROMPT = `
 function setupLiveAnalysis(io) {
   console.log('🎥 Setting up Live Analysis with Socket.IO...')
   
+  // Ensure the AI model is initialized before setting up listeners
+  if (!getAiModel()) {
+    console.warn('⚠️ Gemini AI model could not be initialized. Live analysis will use mock data.');
+  }
+
   const activeSockets = new Set()
 
   io.on('connection', (socket) => {
@@ -84,9 +104,10 @@ function setupLiveAnalysis(io) {
       activeSockets.add(sessionId)
       
       console.log(`🎥 Live analysis started for unit ${unitId}, session ${sessionId}`)
-
-      if (!process.env.GEMINI_API_KEY) {
-        console.warn('⚠️ Gemini API key not found - Using mock live analysis')
+      
+      const aiModel = getAiModel();
+      if (!aiModel) {
+        console.warn('⚠️ Gemini API key not found in config.js - Using mock live analysis')
         setupMockLiveAnalysis(socket, sessionId, unitId)
         return
       }
@@ -113,7 +134,10 @@ function setupLiveAnalysis(io) {
         const frameImage = processFrameData(frameData)
         if (!frameImage) throw new Error('Invalid frame data')
 
-        const result = await model.generateContent([
+        const aiModel = getAiModel();
+        if (!aiModel) throw new Error('AI model is not available.');
+
+        const result = await aiModel.generateContent([
           EMERGENCY_ANALYSIS_PROMPT,
           frameImage
         ])
@@ -139,17 +163,31 @@ function setupLiveAnalysis(io) {
         }
         
         if (analysis) {
-          socket.emit('live_analysis_result', {
-            sessionId,
-            analysis: {
-              ...analysis,
-              timestamp: new Date().toISOString(),
-              session_id: sessionId
-            }
-          })
-          
+                    socket.emit('live_analysis_result', {
+                      sessionId,
+                      analysis: {
+                        ...analysis,
+                        timestamp: new Date().toISOString(),
+                        session_id: sessionId
+                      }
+                    })
+
           if(analysis.detections && analysis.detections[0]?.type !== 'none') {
             console.log(`🤖 Live AI Response for ${sessionId}: ${analysis.detections[0].description}`)
+            
+            // Broadcast significant detections to control centers
+            const significantDetection = analysis.detections[0]
+            if (significantDetection.severity === 'critical' || significantDetection.severity === 'high') {
+              socket.to('control_center').emit('live_detection_alert', {
+                sessionId,
+                unitId: socket.unitId,
+                detection: significantDetection,
+                analysis: analysis,
+                timestamp: new Date().toISOString()
+              })
+              
+              console.log(`🚨 Broadcasting live detection alert to control centers: ${significantDetection.type}`)
+            }
           }
         } else {
           throw new Error('No valid analysis could be parsed from AI response.')
@@ -274,8 +312,9 @@ router.post('/analyze-frame', async (req, res) => {
 
     // Check if we have real frame data
     if (frame && frame !== 'mock_frame_data' && frame.startsWith('data:image')) {
-      if (!process.env.GEMINI_API_KEY) {
-        console.warn('⚠️ Gemini API key not found, using mock analysis')
+      const aiModel = getAiModel();
+      if (!aiModel) {
+        console.warn('⚠️ Gemini API key not found in config.js, using mock analysis')
         return performMockAnalysis(unitId, res)
       }
 
@@ -285,9 +324,7 @@ router.post('/analyze-frame', async (req, res) => {
           throw new Error('Invalid frame data format')
         }
 
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
-        
-        const result = await model.generateContent([
+        const result = await aiModel.generateContent([
           EMERGENCY_ANALYSIS_PROMPT,
           frameImage
         ])

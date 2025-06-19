@@ -1,27 +1,40 @@
 const express = require('express')
 const { createClient } = require('@supabase/supabase-js')
+const { supabase: supaCfg } = require('../../config.js')
 const router = express.Router()
 
 // Initialize Supabase client
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-)
+const supabase = createClient(supaCfg.url, supaCfg.anonKey)
+
+// Remove obsolete env check and replace mock check
+if (!supaCfg.url || !supaCfg.anonKey) {
+  console.warn('⚠️ Supabase credentials missing in config.js, returning mock data')
+  const mockUnits = [
+    { id: '1', name: 'Unit 1', status: 'active', location: { lat: 32.0853, lng: 34.7818 } },
+    { id: '2', name: 'Unit 2', status: 'active', location: { lat: 32.0888, lng: 34.7806 } }
+  ]
+  return res.json({ success: true, units: mockUnits, count: mockUnits.length, isMock: true })
+}
 
 // Get all units - mock for now
 router.get('/', async (req, res) => {
   try {
-    const mockUnits = [
-      { id: '1', name: 'Unit 1', status: 'active', location: { lat: 32.0853, lng: 34.7818 } },
-      { id: '2', name: 'Unit 2', status: 'active', location: { lat: 32.0888, lng: 34.7806 } }
-    ]
+    // Fetch real data from Supabase
+    const { data, error } = await supabase
+      .from('units')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
 
     res.json({
       success: true,
-      units: mockUnits,
-      count: mockUnits.length
+      units: data || [],
+      count: data ? data.length : 0,
+      isMock: false
     })
   } catch (error) {
+    console.error('Error fetching units:', error)
     res.status(500).json({
       error: 'Failed to fetch units',
       message: error.message
