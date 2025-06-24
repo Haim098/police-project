@@ -461,86 +461,71 @@ function performMockAnalysis(unitId, res) {
 
 // Gemini TTS endpoint - Using Gemini 2.5 Flash for natural Hebrew speech
 router.post('/tts', async (req, res) => {
+  // ===== Gemini Native TTS Implementation =====
+  // This endpoint now generates real audio (Base64) using Gemini 2.5 native TTS
+  // and returns it to the client with a format field so that the front-end can
+  // play it without falling back to the Web Speech API.
+
   try {
-    const { text, priority = 'normal', emotion = 'urgent', rate = 'normal' } = req.body
-    
+    const { text, priority = 'normal', emotion = 'neutral', rate = 'normal' } = req.body
+
     if (!text) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Text is required',
-        message: 'Please provide text to synthesize' 
+        message: 'Please provide text to synthesize'
       })
     }
 
-    const aiModel = getAiModel()
-    if (!aiModel) {
-      return res.status(503).json({ 
+    // Ensure Gemini API key configured
+    if (!genAI) {
+      return res.status(503).json({
         error: 'AI service unavailable',
-        message: 'Gemini AI is not configured. Please check API key in config.js' 
+        message: 'Gemini AI is not configured. Please check API key in config.js'
       })
     }
 
-    // Use Gemini to generate natural speech instructions
-    const speechPrompt = `
-אתה מערכת TTS מתקדמת לכוחות חירום. קבלת הודעה: "${text}"
-
-צור הוראת דיבור טבעית בעברית עם הנחיות הבאות:
-- עדיפות: ${priority}
-- רגש: ${emotion}  
-- מהירות: ${rate}
-
-השב בפורמט JSON:
-{
-  "speech_text": "הטקסט המותאם לדיבור טבעי",
-  "speech_rate": 0.8-1.5,
-  "speech_pitch": 0.8-1.2,
-  "speech_volume": 0.8-1.0,
-  "emotion_markers": ["urgent", "calm", "authoritative"],
-  "pronunciation_hints": ["מילה1:הגייה1", "מילה2:הגייה2"]
-}
-
-הקפד על:
-- דיבור ברור וטבעי בעברית
-- הדגשת מילות מפתח חשובות
-- טון מתאים לחירום
-- מהירות מותאמת לדחיפות
-`
-
-    const result = await aiModel.generateContent(speechPrompt)
-    const response = await result.response
-    const speechData = response.text()
-
-    // Try to parse the JSON response
-    let speechConfig
-    try {
-      const jsonMatch = speechData.match(/\{[\s\S]*\}/)
-      if (jsonMatch) {
-        speechConfig = JSON.parse(jsonMatch[0])
-      } else {
-        throw new Error('No JSON found in response')
-      }
-    } catch (parseError) {
-      // Fallback to basic configuration
-      speechConfig = {
-        speech_text: text,
-        speech_rate: priority === 'urgent' ? 1.1 : 1.0,
-        speech_pitch: priority === 'urgent' ? 1.1 : 1.0,
-        speech_volume: 1.0,
-        emotion_markers: [emotion],
-        pronunciation_hints: []
-      }
+    // Select voice according to priority / emotion (simple mapping for now)
+    const voiceMap = {
+      critical: 'Kore',
+      high: 'Fenrir',
+      medium: 'Enceladus',
+      low: 'Umbriel'
     }
+    const selectedVoice = voiceMap[priority] || 'Kore'
 
-    res.json({
-      success: true,
-      audio_config: speechConfig,
-      original_text: text,
-      enhanced_text: speechConfig.speech_text,
-      fallback_available: true
+    // Generate AUDIO response
+    const ttsResponse = await genAI.generateContent({
+      model: 'gemini-2.5-flash-preview-tts',
+      contents: [{ parts: [{ text }] }],
+      generationConfig: {
+        responseModalities: ['AUDIO'],
+        speechConfig: {
+          voiceConfig: {
+            prebuiltVoiceConfig: {
+              voiceName: selectedVoice
+            }
+          }
+        }
+      }
     })
 
+    const audioPart = ttsResponse.response.candidates?.[0]?.content?.parts?.[0]
+
+    if (!audioPart || !audioPart.inlineData || !audioPart.inlineData.data) {
+      throw new Error('Gemini TTS returned no audio')
+    }
+
+    const base64Audio = audioPart.inlineData.data // PCM base64
+    const mimeType = audioPart.inlineData.mimeType || 'audio/wav'
+
+    return res.json({
+      success: true,
+      audio: base64Audio,
+      format: mimeType
+    })
   } catch (error) {
     console.error('TTS generation error:', error)
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'TTS generation failed',
       message: error.message,
       fallback_available: true

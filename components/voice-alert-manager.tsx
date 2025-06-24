@@ -121,38 +121,46 @@ export const VoiceAlertManager: React.FC<VoiceAlertManagerProps> = ({
       })
 
       if (response.ok && audioContextRef.current) {
-        const { audio, format } = await response.json()
-        
-        // Decode base64 audio
-        const audioData = atob(audio)
-        const arrayBuffer = new ArrayBuffer(audioData.length)
-        const view = new Uint8Array(arrayBuffer)
-        for (let i = 0; i < audioData.length; i++) {
-          view[i] = audioData.charCodeAt(i)
-        }
+        const data = await response.json()
 
-        // Play with Web Audio API for better control
-        const audioBuffer = await audioContextRef.current.decodeAudioData(arrayBuffer)
-        const source = audioContextRef.current.createBufferSource()
-        source.buffer = audioBuffer
-        
-        // Add gain node for volume control
-        const gainNode = audioContextRef.current.createGain()
-        gainNode.gain.value = alert.priority === 'critical' ? 1.0 : 0.8
-        
-        source.connect(gainNode)
-        gainNode.connect(audioContextRef.current.destination)
-        
-        source.onended = () => {
-          setCurrentlySpeaking(null)
-          // Mark as spoken
-          setVoiceAlerts(prev => 
-            prev.map(a => a.id === alert.id ? { ...a, spoken: true } : a)
-          )
+        if (data.audio) {
+          console.log('🗣️ Playing Gemini TTS', {
+            voice: data.format,
+            bytes: data.audio.length
+          })
+
+          // Decode base64 audio returned from server
+          const audioData = atob(data.audio)
+          const arrayBuffer = new ArrayBuffer(audioData.length)
+          const view = new Uint8Array(arrayBuffer)
+          for (let i = 0; i < audioData.length; i++) {
+            view[i] = audioData.charCodeAt(i)
+          }
+
+          // Play with Web Audio API for better control
+          const audioBuffer = await audioContextRef.current.decodeAudioData(arrayBuffer)
+          const source = audioContextRef.current.createBufferSource()
+          source.buffer = audioBuffer
+          
+          // Add gain node for volume control
+          const gainNode = audioContextRef.current.createGain()
+          gainNode.gain.value = alert.priority === 'critical' ? 1.0 : 0.8
+          
+          source.connect(gainNode)
+          gainNode.connect(audioContextRef.current.destination)
+          
+          source.onended = () => {
+            setCurrentlySpeaking(null)
+            setVoiceAlerts(prev => 
+              prev.map(a => a.id === alert.id ? { ...a, spoken: true } : a)
+            )
+          }
+          
+          source.start(0)
+          return // Success – skip fallback
+        } else {
+          console.warn('Gemini TTS response missing audio, falling back to Web Speech API')
         }
-        
-        source.start(0)
-        return // Success
       } else if (response.status === 501) {
         // Expected - TTS not implemented, fall through to Web Speech API
         console.log('Gemini TTS not available, using Web Speech API')

@@ -1094,7 +1094,7 @@ export default function FieldUnit() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4" dir="rtl" suppressHydrationWarning>
-      <div className="max-w-md mx-auto space-y-4" suppressHydrationWarning>
+      <div className="max-w-md md:max-w-2xl lg:max-w-4xl mx-auto space-y-4" suppressHydrationWarning>
         {/* No Unit Warning */}
         {!unitId && (
           <Alert className="bg-blue-600 text-white border-blue-700">

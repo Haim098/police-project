@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Users, Shield, Eye, Monitor } from "lucide-react"
+import { Shield, Eye } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 
@@ -51,33 +51,7 @@ export default function HomePage() {
         </div>
 
         {/* Interface Selection */}
-        <div className="grid md:grid-cols-2 gap-8 mt-12">
-          {/* Control Center */}
-          <Card className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-colors">
-            <CardHeader className="text-center pb-4">
-              <div className="bg-blue-600 p-4 rounded-full w-16 h-16 mx-auto mb-4">
-                <Monitor className="w-8 h-8 text-white" />
-              </div>
-              <CardTitle className="text-2xl text-white">מרכז שליטה</CardTitle>
-            </CardHeader>
-            <CardContent className="text-center space-y-4">
-              <p className="text-gray-300">ממשק לצוות הפיקוד לניהול וקואורדינציה של כוחות חירום</p>
-              <ul className="text-sm text-gray-400 space-y-2 text-right">
-                <li>• צפייה בזרמי וידאו מרובים</li>
-                <li>• מפת יחידות בזמן אמת</li>
-                <li>• ניהול התראות והנחיות</li>
-                <li>• תקשורת עם כוחות בשטח</li>
-                <li>• סטטיסטיקות ודוחות</li>
-              </ul>
-              <Link href="/control-center">
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-lg py-6">
-                  <Users className="w-5 h-5 ml-2" />
-                  כניסה למרכז שליטה
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-
+        <div className="grid md:grid-cols-1 gap-8 mt-12">
           {/* Field Unit */}
           <Card className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-colors">
             <CardHeader className="text-center pb-4">
@@ -115,12 +89,12 @@ export default function HomePage() {
               <p className="text-gray-300 text-sm">זיהוי אוטומטי של סכנות, נפגעים ומצבי חירום בזמן אמת</p>
             </div>
             <div className="bg-gray-800 bg-opacity-50 p-6 rounded-lg">
-              <Monitor className="w-8 h-8 text-green-400 mx-auto mb-4" />
+              <Eye className="w-8 h-8 text-green-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-white mb-2">וידאו חי</h3>
               <p className="text-gray-300 text-sm">שידור וידאו איכותי מהשטח למרכז השליטה</p>
             </div>
             <div className="bg-gray-800 bg-opacity-50 p-6 rounded-lg">
-              <Users className="w-8 h-8 text-yellow-400 mx-auto mb-4" />
+              <Eye className="w-8 h-8 text-yellow-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-white mb-2">תיאום כוחות</h3>
               <p className="text-gray-300 text-sm">ניהול ותיאום יעיל של מספר יחידות בו-זמנית</p>
             </div>

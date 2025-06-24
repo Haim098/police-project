@@ -23,6 +23,7 @@ const customJestConfig = {
     '<rootDir>/tests/e2e/',
     '<rootDir>/tests/integration/',
     '<rootDir>/tests/system/',
+    '<rootDir>/tests/unit/',
   ],
   collectCoverageFrom: [
     'app/**/*.{ts,tsx}',
