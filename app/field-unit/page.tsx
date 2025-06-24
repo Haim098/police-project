@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import {
   Camera,
   Mic,
@@ -20,10 +20,12 @@ import {
   Zap,
   Building,
   MapPin,
-
   ScanLine,
   ScreenShare,
   ScreenShareOff,
+  Lightbulb,
+  AlertCircle,
+  Car,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -35,6 +37,9 @@ import websocketService from "@/lib/websocket"
 import { useCamera } from "@/hooks/use-camera"
 import { useLiveAnalysis } from "@/hooks/use-live-analysis"
 import config from "@/config"
+import { PriorityAlertDisplay } from '@/components/priority-alert-display'
+import { VoiceAlertManager } from '@/components/voice-alert-manager'
+import { SituationSummary } from '@/components/situation-summary'
 
 export default function FieldUnit() {
   // Camera hook
@@ -71,8 +76,18 @@ export default function FieldUnit() {
   const [aiError, setAiError] = useState<string | null>(null)
   const [isMockMode, setIsMockMode] = useState(false)
   const [activeDetections, setActiveDetections] = useState<any[]>([])
+  const [detectionTimers, setDetectionTimers] = useState<Map<string, NodeJS.Timeout>>(new Map())
   const [currentTime, setCurrentTime] = useState('')
   const [messageToControl, setMessageToControl] = useState('')
+  const [voiceAlertsEnabled, setVoiceAlertsEnabled] = useState(true)
+  const [quickRecommendations, setQuickRecommendations] = useState<string[]>([])
+  const [analysisFeatures, setAnalysisFeatures] = useState<any>(null)
+  const [sessionStats, setSessionStats] = useState<any>(null)
+  const [memoryAnalysis, setMemoryAnalysis] = useState<any>(null)
+  const [newThreats, setNewThreats] = useState<string[]>([])
+  const [missingPeople, setMissingPeople] = useState<string[]>([])
+  const [soundAlerts, setSoundAlerts] = useState(true)
+  const [lastVoiceAlert, setLastVoiceAlert] = useState<string | null>(null)
 
   // Live AI Analysis hook
   const {
@@ -83,42 +98,115 @@ export default function FieldUnit() {
     sendFrame
   } = useLiveAnalysis({
     unitId,
+    voiceAlertsEnabled,
     onAnalysisResult: (result) => {
-      console.log('🔍 AI Analysis result:', result)
-      const analysisData = result.analysis || result;
-      setLastAnalysis(analysisData)
-
-      if (analysisData && analysisData.detections) {
-        const validDetections = analysisData.detections.filter(d => d.type !== 'none' && d.bounding_box)
-        setActiveDetections(validDetections)
-      } else {
-        setActiveDetections([])
+      console.log('🔍 Advanced AI Analysis result:', result)
+      
+      // Update last analysis for display
+      setLastAnalysis(result)
+      
+      // Update memory analysis
+      if (result.memoryAnalysis) {
+        setMemoryAnalysis(result.memoryAnalysis)
       }
       
-      if (result.isMock) {
-        setIsMockMode(true)
+      // Update new threats
+      if (result.newThreats) {
+        setNewThreats(result.newThreats)
       }
       
-      if (analysisData && analysisData.urgent && analysisData.detections.length > 0) {
-        const detection = analysisData.detections[0]
+      // Update missing people
+      if (result.missingPeople) {
+        setMissingPeople(result.missingPeople)
+      }
+      
+      // Update session stats
+      setSessionStats((prev: any) => ({
+        ...prev,
+        duration: result.statistics?.sessionDuration || prev?.duration || '0',
+        detections: result.statistics || prev?.detections
+      }))
+      
+      // Update active detections for display
+      if (result.detections && result.detections.length > 0) {
+        const newDetections = result.detections.map((det: any) => ({
+          ...det,
+          id: `${det.type}_${Date.now()}_${Math.random()}`,
+          timestamp: new Date().toISOString()
+        }))
         
-        // Ensure detection object is valid before sending
-        if (detection && detection.type && detection.severity && typeof detection.confidence === 'number') {
-        sendDetection(
-          detection.type as Detection['type'],
-          detection.severity as Detection['severity'],
-          detection.confidence
-          );
-        } else {
-          console.warn('⚠️ Invalid detection object received from AI, not sending to DB:', detection);
+        // Add each detection with timeout
+        newDetections.forEach(detection => {
+          addDetectionWithTimeout(detection)
+        })
+      }
+      
+      // Process detections
+      result.detections?.forEach((det: any) => {
+        if (det.severity === 'critical' || det.confidence > 0.8) {
+          console.log('🚨 Critical detection:', det)
+          sendDetection(det)
+        }
+      })
+      
+      // Handle urgent alerts
+      if (result.urgent && result.detections) {
+        const criticalDetections = result.detections.filter((d: any) => 
+          d.severity === 'critical' || d.type === 'fire' || d.type === 'explosion'
+        )
+        
+        if (criticalDetections.length > 0) {
+          sendDetection(criticalDetections[0])
+          
+          if (soundAlerts) {
+            playAlertSound()
+          }
         }
       }
     },
+    onVoiceAlert: (alert) => {
+      console.log('🔊 Voice alert:', alert)
+      
+      // Extract text from alert object
+      const alertText = typeof alert === 'string' ? alert : alert.text || ''
+      const priority = typeof alert === 'string' ? 'medium' : (alert.priority || 'medium')
+      
+      setLastVoiceAlert(alertText)
+      
+      // Show visual alert
+      if (alertText && alertText.length > 0) {
+        addDetectionWithTimeout({
+          id: `voice_${Date.now()}`,
+          type: 'voice_alert',
+          description: alertText,
+          severity: priority === 'critical' ? 'critical' : priority === 'high' ? 'high' : 'medium',
+          confidence: 1.0,
+          location: 'התראה קולית',
+          timestamp: new Date().toISOString()
+        })
+        
+        // Add to voice alert manager
+        if ((window as any).voiceAlertManager) {
+          (window as any).voiceAlertManager.addVoiceAlert(
+            alertText,
+            priority === 'urgent' ? 'critical' : priority,
+            'ai'
+          )
+        }
+      }
+    },
+    onQuickRecommendations: (recommendations) => {
+      setQuickRecommendations(recommendations)
+    },
     onStatusChange: (status) => {
-      console.log('🎯 Live Analysis status:', status)
+      console.log('📡 AI Status:', status)
+    },
+    onReady: (data) => {
+      console.log('✅ AI Ready:', data)
+      setAnalysisFeatures(data.features)
     },
     onError: (error) => {
-      setAiError(error.message)
+      console.error('❌ AI Error:', error)
     }
   })
   
@@ -416,20 +504,22 @@ export default function FieldUnit() {
     }
   }
 
-  const sendDetection = async (type: Detection['type'], severity: Detection['severity'], confidence: number) => {
-    // אל תשלח איתור אם אין unitId
-    if (!unitId) {
-      console.warn('Cannot send detection: no unitId')
-      return
-    }
-    
+  const sendDetection = async (
+    detection: any, 
+    severity: 'low' | 'medium' | 'high' | 'critical' = 'medium',
+    isUrgent: boolean = false
+  ) => {
+    if (!unitId || !location) return
+
     try {
+      console.log('📤 Sending detection:', detection)
+
       const { data, error } = await supabase
         .from('detections')
         .insert({
           unit_id: unitId,
-          type,
-          confidence,
+          type: detection.type,
+          confidence: detection.confidence || 0.95, // Default to high confidence if not provided
           severity,
           acknowledged: false
         })
@@ -445,9 +535,9 @@ export default function FieldUnit() {
           unit_id: unitId,
           type: 'detection',
           data: {
-            detection_type: type,
+            detection_type: detection.type,
             severity,
-            confidence,
+            confidence: detection.confidence,
             location: currentLocation
           }
         })
@@ -466,14 +556,14 @@ export default function FieldUnit() {
           websocketService.sendMessage('urgent_alert', {
             unitId,
             unitName,
-            message: `זיהוי דחוף: ${type} ביחידה ${unitName}`,
+            message: `זיהוי דחוף: ${detection.type} ביחידה ${unitName}`,
             detection: data,
             location: currentLocation
           })
         }
       }
 
-      console.log(`✅ Detection ${type} sent successfully to control center`)
+      console.log(`✅ Detection ${detection.type} sent successfully to control center`)
     } catch (error) {
       console.error('Error sending detection:', error)
       setAiError("שגיאה בשליחת זיהוי למרכז הבקרה.")
@@ -702,10 +792,14 @@ export default function FieldUnit() {
     switch (type) {
       case "fire":
         return <Flame className="w-5 h-5 text-red-500" />
-      case "person":
-        return <Users className="w-5 h-5 text-blue-500" />
       case "smoke":
         return <Eye className="w-5 h-5 text-gray-600" />
+      case "person":
+        return <Users className="w-5 h-5 text-blue-500" />
+      case "child":
+        return <Users className="w-5 h-5 text-cyan-500" />
+      case "gas_tank":
+        return <AlertCircle className="w-5 h-5 text-red-600" />
       case "wire":
         return <Zap className="w-5 h-5 text-yellow-500" />
       case "structural_damage":
@@ -764,7 +858,7 @@ export default function FieldUnit() {
         
         // Auto-send detection to database if significant
         if (detection.type !== 'none') {
-        await sendDetection(detection.type, detection.severity, detection.confidence)
+        await sendDetection(detection)
         }
         
         // alert(`AI זיהה: ${detection.description}\nרמת ביטחון: ${Math.round(detection.confidence * 100)}%`)
@@ -923,6 +1017,80 @@ export default function FieldUnit() {
       setLocationPermission('denied')
     }
   }
+
+  // Alert sound function using Web Speech API
+  const playAlertSound = () => {
+    if ('speechSynthesis' in window) {
+      // Cancel any ongoing speech
+      window.speechSynthesis.cancel()
+      
+      const utterance = new SpeechSynthesisUtterance('אזהרה! זוהתה סכנה!')
+      utterance.lang = 'he-IL'
+      utterance.rate = 1.3
+      utterance.pitch = 1.2
+      utterance.volume = 1.0
+      
+      // Try to get Hebrew voice
+      const voices = window.speechSynthesis.getVoices()
+      const hebrewVoice = voices.find(voice => voice.lang.startsWith('he'))
+      if (hebrewVoice) {
+        utterance.voice = hebrewVoice
+      }
+      
+      window.speechSynthesis.speak(utterance)
+    }
+  }
+
+  // Auto-cleanup detections after 5 seconds
+  const addDetectionWithTimeout = useCallback((detection: any) => {
+    const detectionId = detection.id || `${detection.type}_${Date.now()}_${Math.random()}`
+    const detectionWithId = { ...detection, id: detectionId }
+    
+    // Clear existing timer if any
+    const existingTimer = detectionTimers.get(detectionId)
+    if (existingTimer) {
+      clearTimeout(existingTimer)
+    }
+    
+    // Add detection
+    setActiveDetections(prev => {
+      // Check for duplicates based on type and description
+      const isDuplicate = prev.some(d => 
+        d.type === detection.type && 
+        d.description === detection.description &&
+        Date.now() - new Date(d.timestamp).getTime() < 3000 // Within 3 seconds
+      )
+      
+      if (isDuplicate) {
+        console.log('🚫 Duplicate detection prevented:', detection.type)
+        return prev
+      }
+      
+      const updated = [detectionWithId, ...prev]
+      return updated.slice(0, 8) // Keep last 8 detections
+    })
+    
+    // Set timer to remove detection after 5 seconds
+    const timer = setTimeout(() => {
+      setActiveDetections(prev => prev.filter(d => d.id !== detectionId))
+      setDetectionTimers(prev => {
+        const newMap = new Map(prev)
+        newMap.delete(detectionId)
+        return newMap
+      })
+      console.log('🗑️ Auto-removed detection:', detectionId)
+    }, 5000)
+    
+    // Store timer
+    setDetectionTimers(prev => new Map(prev).set(detectionId, timer))
+  }, [detectionTimers])
+
+  // Cleanup timers on unmount
+  useEffect(() => {
+    return () => {
+      detectionTimers.forEach(timer => clearTimeout(timer))
+    }
+  }, [detectionTimers])
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4" dir="rtl" suppressHydrationWarning>
@@ -1137,32 +1305,7 @@ export default function FieldUnit() {
           </CardContent>
         </Card>
 
-        {/* Active Detections List */}
-        {activeDetections.length > 0 && (
-          <Card className="bg-gray-800 border-gray-700">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base flex items-center gap-2">
-                <AlertTriangle className="w-5 h-5 text-yellow-400" />
-                זיהויים פעילים
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {activeDetections.map((detection, index) => (
-                  <div key={index} className={`p-2 rounded border-l-4 ${getSeverityBorderColor(detection.severity)}`}>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        {getDetectionIcon(detection.type)}
-                        <span className="font-medium">{detection.description}</span>
-                      </div>
-                      <Badge variant="outline">{Math.round(detection.confidence * 100)}%</Badge>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+
 
         {/* Camera Control Buttons */}
         <div className="grid grid-cols-3 gap-2">
@@ -1263,6 +1406,28 @@ export default function FieldUnit() {
                 </AlertDescription>
               </Alert>
             )}
+
+            {/* AI Features Display */}
+            {analysisFeatures && (
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className={`p-2 rounded ${analysisFeatures.peopleDetection ? 'bg-green-900' : 'bg-gray-700'}`}>
+                  <Users className="w-4 h-4 mb-1" />
+                  זיהוי אנשים
+                </div>
+                <div className={`p-2 rounded ${analysisFeatures.fireAndSmokeAnalysis ? 'bg-green-900' : 'bg-gray-700'}`}>
+                  <Flame className="w-4 h-4 mb-1" />
+                  ניתוח אש ועשן
+                </div>
+                <div className={`p-2 rounded ${analysisFeatures.electricalHazards ? 'bg-green-900' : 'bg-gray-700'}`}>
+                  <Zap className="w-4 h-4 mb-1" />
+                  סכנות חשמל
+                </div>
+                <div className={`p-2 rounded ${analysisFeatures.voiceAlerts ? 'bg-green-900' : 'bg-gray-700'}`}>
+                  <MessageSquare className="w-4 h-4 mb-1" />
+                  התראות קוליות
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -1290,6 +1455,10 @@ export default function FieldUnit() {
                           {detection.type === 'smoke' && 'עשן'}
                           {detection.type === 'person' && 'אדם'}
                           {detection.type === 'structural_damage' && 'נזק מבני'}
+                          {detection.type === 'electrical_hazard' && 'סכנה חשמלית'}
+                          {detection.type === 'explosion_risk' && 'סכנת פיצוץ'}
+                          {detection.type === 'vehicle' && 'רכב'}
+                          {detection.type === 'none' && 'ללא זיהוי'}
                         </span>
                       </div>
                       <Badge variant={detection.severity === 'critical' ? 'destructive' : 'secondary'} className="text-xs">
@@ -1312,6 +1481,28 @@ export default function FieldUnit() {
             </ScrollArea>
           </CardContent>
         </Card>
+
+        {/* Priority Alert Display - Combined with Active Detections */}
+        <PriorityAlertDisplay 
+          detections={activeDetections}
+          className="mb-4"
+        />
+
+        {/* Voice Alert Manager */}
+        <VoiceAlertManager 
+          enabled={voiceAlertsEnabled}
+          onToggleEnabled={setVoiceAlertsEnabled}
+          className="mb-4"
+        />
+
+        {/* Situation Summary */}
+        <SituationSummary 
+          statistics={lastAnalysis?.statistics}
+          memoryAnalysis={lastAnalysis?.memoryAnalysis}
+          sessionStats={sessionStats}
+          hazardTrend={lastAnalysis?.statistics?.hazardTrend}
+          className="mb-4"
+        />
 
         {/* Instructions from Control Center */}
         <Card className="bg-gray-800 border-gray-700">
@@ -1418,6 +1609,251 @@ export default function FieldUnit() {
             )}
           </CardContent>
         </Card>
+
+        {/* Quick Recommendations */}
+        {quickRecommendations.length > 0 && (
+          <Card className="bg-yellow-900 border-yellow-700">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-yellow-400" />
+                המלצות דחופות
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {quickRecommendations.map((rec, index) => (
+                  <Alert key={index} className="bg-yellow-800 border-yellow-600">
+                    <AlertDescription className="text-yellow-100 font-medium">
+                      {index + 1}. {rec}
+                    </AlertDescription>
+                  </Alert>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Advanced AI Analysis Results */}
+        {lastAnalysis && lastAnalysis.statistics && (
+          <Card className="bg-gray-800 border-gray-700">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Eye className="w-5 h-5" />
+                סטטיסטיקות זיהוי
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4">
+                {/* People Statistics */}
+                <div>
+                  <p className="text-sm font-medium mb-2">אנשים שזוהו:</p>
+                  <div className="space-y-1 text-xs">
+                    <div className="flex justify-between">
+                      <span>סה"כ:</span>
+                      <span className="font-bold">{lastAnalysis.statistics.people.total}</span>
+                    </div>
+                    {lastAnalysis.statistics.people.children > 0 && (
+                      <div className="flex justify-between text-yellow-400">
+                        <span>ילדים:</span>
+                        <span className="font-bold">{lastAnalysis.statistics.people.children}</span>
+                      </div>
+                    )}
+                    {lastAnalysis.statistics.people.injured > 0 && (
+                      <div className="flex justify-between text-red-400">
+                        <span>פצועים:</span>
+                        <span className="font-bold">{lastAnalysis.statistics.people.injured}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                {/* Hazards Statistics */}
+                <div>
+                  <p className="text-sm font-medium mb-2">סכנות שזוהו:</p>
+                  <div className="space-y-1 text-xs">
+                    {lastAnalysis.statistics.hazards.fires > 0 && (
+                      <div className="flex justify-between text-red-400">
+                        <span>שריפות:</span>
+                        <span className="font-bold">{lastAnalysis.statistics.hazards.fires}</span>
+                      </div>
+                    )}
+                    {lastAnalysis.statistics.hazards.gasLeaks > 0 && (
+                      <div className="flex justify-between text-orange-400">
+                        <span>דליפות גז:</span>
+                        <span className="font-bold">{lastAnalysis.statistics.hazards.gasLeaks}</span>
+                      </div>
+                    )}
+                    {lastAnalysis.statistics.hazards.electricalHazards > 0 && (
+                      <div className="flex justify-between text-yellow-400">
+                        <span>סכנות חשמל:</span>
+                        <span className="font-bold">{lastAnalysis.statistics.hazards.electricalHazards}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+              {/* Risk Assessment */}
+              {lastAnalysis.riskAssessment && (
+                <div className="mt-3 pt-3 border-t border-gray-700">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">רמת סיכון כללית:</span>
+                    <Badge 
+                      className={
+                        lastAnalysis.riskAssessment.overallRisk === 'critical' ? 'bg-red-600' :
+                        lastAnalysis.riskAssessment.overallRisk === 'high' ? 'bg-orange-600' :
+                        lastAnalysis.riskAssessment.overallRisk === 'medium' ? 'bg-yellow-600' :
+                        'bg-green-600'
+                      }
+                    >
+                      {lastAnalysis.riskAssessment.overallRisk === 'critical' ? 'קריטי' :
+                       lastAnalysis.riskAssessment.overallRisk === 'high' ? 'גבוה' :
+                       lastAnalysis.riskAssessment.overallRisk === 'medium' ? 'בינוני' : 'נמוך'}
+                    </Badge>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Memory-Based Analysis Display */}
+        {(sessionStats || memoryAnalysis) && (
+          <Card className="bg-purple-900 border-purple-700">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Lightbulb className="w-5 h-5 text-purple-400" />
+                ניתוח מבוסס זיכרון
+                {sessionStats?.duration && (
+                  <Badge className="bg-purple-700">{sessionStats.duration} שניות</Badge>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {/* Session Statistics */}
+              {sessionStats && (
+                <div className="bg-purple-800/50 rounded p-3">
+                  <p className="text-sm font-medium mb-2">סטטיסטיקות סשן:</p>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="flex justify-between">
+                      <span>משך סריקה:</span>
+                      <span className="font-bold">{sessionStats.duration || 0} שניות</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>אנשים במעקב:</span>
+                      <span className="font-bold">{sessionStats.totalPeople || 0}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>סכנות פעילות:</span>
+                      <span className="font-bold text-orange-400">{sessionStats.activeHazards || 0}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>אירועים קריטיים:</span>
+                      <span className="font-bold text-red-400">{sessionStats.criticalEvents || 0}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+                              {/* Memory Analysis Warnings */}
+                {memoryAnalysis?.timeBasedWarnings?.length > 0 && (
+                <div className="bg-red-900/50 rounded p-3">
+                  <p className="text-sm font-medium mb-2 text-red-300">⚠️ אזהרות מבוססות זמן:</p>
+                  <div className="space-y-1 text-xs">
+                    {memoryAnalysis.timeBasedWarnings.map((warning: string, idx: number) => (
+                      <Alert key={idx} className="bg-red-800 border-red-600 py-1">
+                        <AlertDescription className="text-red-200">
+                          {warning}
+                        </AlertDescription>
+                      </Alert>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Predicted Dangers */}
+              {memoryAnalysis?.predictedDangers?.length > 0 && (
+                <div className="bg-orange-900/50 rounded p-3">
+                  <p className="text-sm font-medium mb-2 text-orange-300">🔮 סכנות צפויות:</p>
+                  <div className="space-y-1 text-xs">
+                    {memoryAnalysis.predictedDangers.map((danger: string, idx: number) => (
+                      <div key={idx} className="flex items-start gap-2">
+                        <AlertTriangle className="w-3 h-3 text-orange-400 mt-0.5" />
+                        <span className="text-orange-200">{danger}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* People Tracking Updates */}
+              {memoryAnalysis?.trackingUpdates?.peopleCount && (
+                <div className="bg-blue-900/50 rounded p-3">
+                  <p className="text-sm font-medium mb-2 text-blue-300">👥 עדכוני מעקב:</p>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="flex justify-between">
+                      <span>סה"כ במעקב:</span>
+                      <span className="font-bold">{memoryAnalysis.trackingUpdates.peopleCount.total}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>זוהו לאחרונה:</span>
+                      <span className="font-bold text-green-400">+{memoryAnalysis.trackingUpdates.peopleCount.newlyDetected}</span>
+                    </div>
+                    {memoryAnalysis.trackingUpdates.peopleCount.missing > 0 && (
+                      <div className="flex justify-between col-span-2">
+                        <span className="text-red-300">נעדרים מהפריים:</span>
+                        <span className="font-bold text-red-400">{memoryAnalysis.trackingUpdates.peopleCount.missing}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* New Threats and Missing People Alerts */}
+        {(newThreats.length > 0 || missingPeople.length > 0) && (
+          <Card className="bg-red-900 border-red-700">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-red-400 animate-pulse" />
+                התראות מיוחדות
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {newThreats.length > 0 && (
+                <div>
+                  <p className="text-sm font-medium mb-2 text-red-300">🆕 איומים חדשים:</p>
+                  <div className="space-y-1">
+                    {newThreats.map((threat, idx) => (
+                      <Alert key={idx} className="bg-red-800 border-red-600">
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertDescription className="text-red-200">
+                          {threat}
+                        </AlertDescription>
+                      </Alert>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {missingPeople.length > 0 && (
+                <div>
+                  <p className="text-sm font-medium mb-2 text-orange-300">🔍 אנשים שנעלמו:</p>
+                  <div className="space-y-1">
+                    {missingPeople.map((person, idx) => (
+                      <Alert key={idx} className="bg-orange-800 border-orange-600">
+                        <Users className="h-4 w-4" />
+                        <AlertDescription className="text-orange-200">
+                          {person}
+                        </AlertDescription>
+                      </Alert>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
       </div>
     </div>

@@ -2,6 +2,7 @@ const express = require('express')
 const { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } = require('@google/generative-ai')
 const router = express.Router()
 const config = require('../../config.js');
+const geminiLiveService = require('../services/geminiLiveService');
 
 // Initialize AI lazily to ensure environment variables are loaded
 let genAI;
@@ -17,30 +18,30 @@ function getAiModel() {
     
     genAI = new GoogleGenerativeAI(geminiApiKey);
     model = genAI.getGenerativeModel({ 
-      model: 'gemini-1.5-flash',
-      generationConfig: {
-        maxOutputTokens: 2048,
-        temperature: 0.2,
-      },
-      // Disable safety settings for this specific use case
-      safetySettings: [
-        {
-          category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-          threshold: HarmBlockThreshold.BLOCK_NONE,
-        },
-        {
-          category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-          threshold: HarmBlockThreshold.BLOCK_NONE,
-        },
-        {
-          category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-          threshold: HarmBlockThreshold.BLOCK_NONE,
-        },
-        {
-          category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-          threshold: HarmBlockThreshold.BLOCK_NONE,
-        },
-      ],
+  model: 'gemini-1.5-flash',
+  generationConfig: {
+    maxOutputTokens: 2048,
+    temperature: 0.2,
+  },
+  // Disable safety settings for this specific use case
+  safetySettings: [
+    {
+      category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+      threshold: HarmBlockThreshold.BLOCK_NONE,
+    },
+    {
+      category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+      threshold: HarmBlockThreshold.BLOCK_NONE,
+    },
+    {
+      category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+      threshold: HarmBlockThreshold.BLOCK_NONE,
+    },
+    {
+      category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+      threshold: HarmBlockThreshold.BLOCK_NONE,
+    },
+  ],
     });
   }
   return model;
@@ -50,20 +51,41 @@ function getAiModel() {
 const EMERGENCY_ANALYSIS_PROMPT = `
 אתה מערכת AI מתקדמת לזיהוי חירום עבור כוחות הביטחון בישראל. אתה רואה תמונה שצולמה מיחידת שטח.
 
+חשוב מאוד! השתמש רק בסוגי הזיהוי הבאים (רשימה מוגבלת מבסיס הנתונים):
+- "fire" - לשריפות פעילות, להבות
+- "smoke" - לעשן מכל סוג (שחור, לבן, כבד, קל)
+- "person" - לאנשים (מבוגרים, נפגעים, לכודים)
+- "child" - לילדים (זיהוי ספציפי לקטינים)
+- "gas_tank" - לבלוני גז, מיכלי דלק מסוכנים
+- "wire" - לחוטים חשמליים חשופים, כבלים מסוכנים
+- "structural_damage" - לנזק מבני (כולל מבנים קרוסים, פגועים, לא יציבים, קירות שבורים)
+
+אל תשתמש בסוגים אחרים! במיוחד אל תשתמש ב:
+- electrical_hazard (השתמש ב-wire במקום)
+- explosion_risk (השתמש ב-gas_tank במקום)
+- vehicle (לא נתמך כרגע)
+- buildingCollapse או damagedBuilding (השתמש ב-structural_damage במקום)
+
 נתח את התמונה וחפש:
 🔥 שריפות, עשן (שחור/לבן), להבות
 👥 אנשים בסיכון, נפגעים, ילדים, מבוגרים
-🏠 נזק מבני, קירות שבורים, דלתות שבורות
+🏠 נזק מבני, קירות שבורים, מבנים פגועים או קרוסים
 ⚡ חוטי חשמל חשופים, סכנות חשמליות  
-💥 חומרים מסוכנים, בלוני גז, רכבים בוערים
-🚨 כל איום או סכנה אחרת
+💥 חומרים מסוכנים, בלוני גז, סכנת פיצוץ
+
+דוגמאות לשימוש נכון:
+- מבנה קרוס/פגוע/לא יציב → "type": "structural_damage"
+- אדם מבוגר/נפגע/בסכנה/לכוד → "type": "person"  
+- ילד/קטין/ילדה → "type": "child"
+- בלון גז/מיכל דלק/גז → "type": "gas_tank"
+- חוט חשמל חשוף/כבל פגוע → "type": "wire"
 
 השב אך ורק בפורמט JSON הבא. אל תוסיף שום טקסט או הסבר לפני או אחרי ה-JSON.
 {
   "urgent": true/false,
   "detections": [
     {
-      "type": "fire/smoke/person/structural_damage/electrical_hazard/explosion_risk/none",
+      "type": "fire/smoke/person/child/gas_tank/wire/structural_damage",
       "severity": "low/medium/high/critical/none", 
       "confidence": 0.0-1.0,
       "description": "תיאור קצר בעברית של מה שזוהה. אם לא זוהה כלום, כתוב 'ללא זיהוי'.",
@@ -84,151 +106,135 @@ const EMERGENCY_ANALYSIS_PROMPT = `
 
 // Live Analysis integration with existing Socket.IO
 function setupLiveAnalysis(io) {
-  console.log('🎥 Setting up Live Analysis with Socket.IO...')
+  console.log('🎥 Setting up Advanced Live Analysis with Socket.IO...')
   
-  // Ensure the AI model is initialized before setting up listeners
-  if (!getAiModel()) {
-    console.warn('⚠️ Gemini AI model could not be initialized. Live analysis will use mock data.');
-  }
-
   const activeSockets = new Set()
 
   io.on('connection', (socket) => {
-    let analysisInterval = null
-    let isAnalyzing = false
+    console.log('🔌 AI route: Socket connected:', socket.id)
 
-    // Handle live analysis start
+    // Handle live analysis session
     socket.on('start_live_analysis', async (data) => {
-      const { unitId } = data
-      const sessionId = socket.id
-      activeSockets.add(sessionId)
-      
-      console.log(`🎥 Live analysis started for unit ${unitId}, session ${sessionId}`)
-      
-      const aiModel = getAiModel();
-      if (!aiModel) {
-        console.warn('⚠️ Gemini API key not found in config.js - Using mock live analysis')
-        setupMockLiveAnalysis(socket, sessionId, unitId)
-        return
-      }
+      try {
+        console.log('🎥 Starting live analysis for unit:', data.unitId)
+        
+        const session = await geminiLiveService.createSession(socket.id, {
+          unitId: data.unitId,
+          features: data.features
+        })
 
-      socket.emit('live_analysis_ready', { 
-        sessionId,
-        message: 'Live AI analysis activated. Ready for frames.'
-      })
+        socket.emit('live_analysis_ready', {
+          sessionId: socket.id,
+          message: 'Live analysis ready',
+          features: {
+            peopleDetection: true,
+            fireAndSmokeAnalysis: true,
+            structuralDamageAssessment: true,
+            objectIdentification: true,
+            sceneUnderstanding: true,
+            riskAssessment: true,
+            voiceAlerts: true,
+            memoryRetention: true,
+            electricalHazards: true,
+            explosionDetection: true,
+            chemicalHazards: true,
+            timeBasedAnalysis: true
+          }
+        })
+      } catch (error) {
+        console.error('Error starting live analysis:', error)
+        socket.emit('live_analysis_error', {
+          message: 'Failed to start live analysis',
+          error: error.message
+        })
+      }
     })
 
-    // Handle video frames
-    socket.on('live_analysis_frame', async (data) => {
-      const { frameData } = data
-      const sessionId = socket.id
-      
-      if (!activeSockets.has(sessionId) || !frameData || isAnalyzing) {
-        return
-      }
-
-      console.log(`🖼️ Received frame for analysis from session ${sessionId}`)
-
+    // Handle frame analysis
+    socket.on('analyze_frame', async (data) => {
       try {
-        isAnalyzing = true
-        const frameImage = processFrameData(frameData)
-        if (!frameImage) throw new Error('Invalid frame data')
-
-        const aiModel = getAiModel();
-        if (!aiModel) throw new Error('AI model is not available.');
-
-        const result = await aiModel.generateContent([
-          EMERGENCY_ANALYSIS_PROMPT,
-          frameImage
-        ])
-        const response = result.response
-        const analysisText = response.text()
-        
-        // More robust JSON parsing
-        let analysis;
-        try {
-          // The AI sometimes wraps the JSON in ```json ... ```, so we extract it.
-          const jsonMatch = analysisText.match(/```json\s*(\{[\s\S]*\})\s*```|(\{[\s\S]*\})/);
-          if (!jsonMatch) {
-            throw new Error('No JSON object found in the AI response.');
-          }
-          // Get the actual JSON string from the match (either group 1 or 2)
-          const jsonString = jsonMatch[1] || jsonMatch[2];
-          analysis = JSON.parse(jsonString);
-
-        } catch (parseError) {
-          console.error('🚨 Failed to parse JSON from AI response. Raw text:', analysisText);
-          // We'll throw a new error to be caught by the outer block
-          throw new Error(`Failed to parse AI response: ${parseError.message}`);
+        if (!data.frame) {
+          throw new Error('No frame data provided')
         }
-        
-        if (analysis) {
-                    socket.emit('live_analysis_result', {
-                      sessionId,
-                      analysis: {
-                        ...analysis,
-                        timestamp: new Date().toISOString(),
-                        session_id: sessionId
-                      }
-                    })
 
-          if(analysis.detections && analysis.detections[0]?.type !== 'none') {
-            console.log(`🤖 Live AI Response for ${sessionId}: ${analysis.detections[0].description}`)
-            
-            // Broadcast significant detections to control centers
-            const significantDetection = analysis.detections[0]
-            if (significantDetection.severity === 'critical' || significantDetection.severity === 'high') {
-              socket.to('control_center').emit('live_detection_alert', {
-                sessionId,
-                unitId: socket.unitId,
-                detection: significantDetection,
-                analysis: analysis,
-                timestamp: new Date().toISOString()
-              })
-              
-              console.log(`🚨 Broadcasting live detection alert to control centers: ${significantDetection.type}`)
-            }
+        // Analyze frame with Gemini
+        const analysis = await geminiLiveService.analyzeFrame(socket.id, data.frame)
+        
+        // Send analysis result
+        socket.emit('frame_analysis_result', analysis)
+
+        // If urgent, broadcast to control centers
+        if (analysis.currentFrame?.urgent) {
+          // Find high severity detections
+          const criticalDetections = analysis.currentFrame.detections.filter(d => 
+            d.severity === 'critical' || d.severity === 'high'
+          )
+
+          if (criticalDetections.length > 0) {
+            io.emit('live_detection_alert', {
+              unitId: data.unitId,
+              detections: criticalDetections,
+              urgentMessage: analysis.currentFrame.urgentVoiceAlert,
+              timestamp: new Date().toISOString()
+            })
           }
-        } else {
-          throw new Error('No valid analysis could be parsed from AI response.')
+        }
+
+        // Send voice alert if needed
+        if (analysis.currentFrame?.urgentVoiceAlert) {
+          socket.emit('voice_alert', {
+            message: analysis.currentFrame.urgentVoiceAlert,
+            priority: 'urgent'
+          })
+        }
+
+        // Check for explosion warnings
+        const explosionDetection = analysis.currentFrame?.detections?.find(d => 
+          d.type === 'gas_tank' || 
+          (d.type === 'fire' && d.description?.includes('פיצוץ'))
+        )
+
+        if (explosionDetection && explosionDetection.severity === 'critical') {
+          socket.emit('emergency_explosion_warning', {
+            message: 'זהירות! סכנת פיצוץ מיידית!',
+            action: 'התרחק מהאזור מיד!',
+            detection: explosionDetection
+          })
         }
 
       } catch (error) {
-        console.error('🚨 Live analysis frame error:', error.message)
-        socket.emit('live_analysis_error', {
-          sessionId,
-          message: `AI analysis failed: ${error.message}`
+        console.error('Error analyzing frame:', error)
+        socket.emit('frame_analysis_error', {
+          message: 'Failed to analyze frame',
+          error: error.message
         })
-      } finally {
-        isAnalyzing = false
       }
     })
 
-    // Handle stop live analysis
+    // Handle stop analysis
     socket.on('stop_live_analysis', async () => {
-      const sessionId = socket.id
-      activeSockets.delete(sessionId)
-      if (analysisInterval) {
-        clearInterval(analysisInterval)
-        analysisInterval = null
+      try {
+        await geminiLiveService.endSession(socket.id)
+        socket.emit('live_analysis_stopped', {
+          message: 'Live analysis stopped'
+        })
+      } catch (error) {
+        console.error('Error stopping live analysis:', error)
       }
-      isAnalyzing = false
-      console.log(`🛑 Stopped live analysis for session ${sessionId}`)
     })
 
-    // Cleanup on disconnect
     socket.on('disconnect', async () => {
-      const sessionId = socket.id
-      if (activeSockets.has(sessionId)) {
-        activeSockets.delete(sessionId)
-        console.log(`🔌 Cleaned up active session on disconnect: ${sessionId}`)
+      console.log('🔌 AI route: Socket disconnected:', socket.id)
+      // Clean up session
+      try {
+        await geminiLiveService.endSession(socket.id)
+      } catch (error) {
+        console.error('Error cleaning up session:', error)
       }
-      if (analysisInterval) {
-        clearInterval(analysisInterval)
-      }
-      isAnalyzing = false
     })
   })
+  
+  console.log('✅ Advanced Memory-Enhanced Live Analysis setup complete!')
 }
 
 // Mock live analysis for when Gemini is unavailable
@@ -452,6 +458,95 @@ function performMockAnalysis(unitId, res) {
     })
   }, 1000)
 }
+
+// Gemini TTS endpoint - Using Gemini 2.5 Flash for natural Hebrew speech
+router.post('/tts', async (req, res) => {
+  try {
+    const { text, priority = 'normal', emotion = 'urgent', rate = 'normal' } = req.body
+    
+    if (!text) {
+      return res.status(400).json({ 
+        error: 'Text is required',
+        message: 'Please provide text to synthesize' 
+      })
+    }
+
+    const aiModel = getAiModel()
+    if (!aiModel) {
+      return res.status(503).json({ 
+        error: 'AI service unavailable',
+        message: 'Gemini AI is not configured. Please check API key in config.js' 
+      })
+    }
+
+    // Use Gemini to generate natural speech instructions
+    const speechPrompt = `
+אתה מערכת TTS מתקדמת לכוחות חירום. קבלת הודעה: "${text}"
+
+צור הוראת דיבור טבעית בעברית עם הנחיות הבאות:
+- עדיפות: ${priority}
+- רגש: ${emotion}  
+- מהירות: ${rate}
+
+השב בפורמט JSON:
+{
+  "speech_text": "הטקסט המותאם לדיבור טבעי",
+  "speech_rate": 0.8-1.5,
+  "speech_pitch": 0.8-1.2,
+  "speech_volume": 0.8-1.0,
+  "emotion_markers": ["urgent", "calm", "authoritative"],
+  "pronunciation_hints": ["מילה1:הגייה1", "מילה2:הגייה2"]
+}
+
+הקפד על:
+- דיבור ברור וטבעי בעברית
+- הדגשת מילות מפתח חשובות
+- טון מתאים לחירום
+- מהירות מותאמת לדחיפות
+`
+
+    const result = await aiModel.generateContent(speechPrompt)
+    const response = await result.response
+    const speechData = response.text()
+
+    // Try to parse the JSON response
+    let speechConfig
+    try {
+      const jsonMatch = speechData.match(/\{[\s\S]*\}/)
+      if (jsonMatch) {
+        speechConfig = JSON.parse(jsonMatch[0])
+      } else {
+        throw new Error('No JSON found in response')
+      }
+    } catch (parseError) {
+      // Fallback to basic configuration
+      speechConfig = {
+        speech_text: text,
+        speech_rate: priority === 'urgent' ? 1.1 : 1.0,
+        speech_pitch: priority === 'urgent' ? 1.1 : 1.0,
+        speech_volume: 1.0,
+        emotion_markers: [emotion],
+        pronunciation_hints: []
+      }
+    }
+
+    res.json({
+      success: true,
+      audio_config: speechConfig,
+      original_text: text,
+      enhanced_text: speechConfig.speech_text,
+      fallback_available: true
+    })
+
+  } catch (error) {
+    console.error('TTS generation error:', error)
+    res.status(500).json({ 
+      error: 'TTS generation failed',
+      message: error.message,
+      fallback_available: true
+    })
+  }
+})
 
 module.exports = {
   router,

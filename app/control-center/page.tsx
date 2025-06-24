@@ -184,12 +184,32 @@ export default function ControlCenter() {
 
       // Listen for messages from field units
       websocketService.onMessage('unit_message_received', (data) => {
-        console.log('📨 Message received from unit:', data)
+        console.log('💬 Message from field unit:', data)
+        alert(`הודעה מ${data.unitName || 'יחידה'}: ${data.message}`)
+      })
+
+      // Listen for advanced AI detection alerts
+      websocketService.onMessage('advanced_detection_alert', (data) => {
+        console.log('🤖 Advanced AI detection alert:', data)
+        
+        // Play alert sound for critical detections
+        if (soundAlerts && data.summary.overallRisk === 'critical') {
+          playAlertSound()
+        }
         
         // Show notification
-        alert(`הודעה מיחידה ${data.unitName}: ${data.message}`)
+        const criticalCount = data.criticalDetections.length
+        const hazardTypes = [...new Set(data.criticalDetections.map((d: any) => d.type))].join(', ')
         
-        // Reload units and events to show new messages
+        alert(`🚨 התראת AI מתקדמת מ${data.unitName || data.unitId}:\n` +
+              `רמת סיכון: ${data.summary.overallRisk === 'critical' ? 'קריטית' : 
+                            data.summary.overallRisk === 'high' ? 'גבוהה' : 'בינונית'}\n` +
+              `${criticalCount} איומים זוהו: ${hazardTypes}\n` +
+              `אנשים בסכנה: ${data.summary.people.total} (${data.summary.people.injured} פצועים)\n` +
+              `פעולות מומלצות: ${data.quickActions.join(', ')}`)
+        
+        // Reload detections to show new data
+        loadDetections()
         loadUnits()
       })
 
